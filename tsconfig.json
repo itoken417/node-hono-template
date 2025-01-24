@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "baseUrl":"./",
+    "paths": {
+        "@modules/*" : ["./src/modules/*"],
+        "@routes/*" : ["./src/routes/*"],
+        "@middleware/*" : ["./src/middleware/*"],
+        "@layouts/*" : ["./src/jsx/layouts/*"],
+        "@pages/*" : ["./src/jsx/pages/*"],
+        "@components/*" : ["./src/jsx/components/*"]
+    },
+    "types": [
+      "node"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx":
+  }
+}
