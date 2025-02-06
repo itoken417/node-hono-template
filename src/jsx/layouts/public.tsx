@@ -1,11 +1,5 @@
 import { html } from 'hono/html'
-
-interface SiteData {
-  title: string
-  description: string
-  image: string
-  children?: any
-}
+import type { SiteData } from '@modules/types'
 
 export const Layout = (props: SiteData) => html`
 <!doctype html>

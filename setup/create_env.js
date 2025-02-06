@@ -20,7 +20,7 @@ const askQuestion = (question) =>
 
 // デフォルトの設定値（必要に応じて調整）
 const defaultConfig = {
-    PG_HOST: '127.0.0.1',
+    PG_HOST: 'localhost',
     PG_PORT: '5432',
     PG_USER: 'app',
     PG_PASSWORD: '',

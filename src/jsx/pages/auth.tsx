@@ -1,6 +1,6 @@
 import { html } from 'hono/html'
-import type {SiteData} from '@modules/types.ts'
-import { Layout } from '@layouts/authorised.tsx'
+import type {SiteData} from '@modules/types'
+import { Layout } from '@layouts/public.tsx'
 
 export const Auth = (props: { siteData: SiteData, error?: any }) => (
 <Layout {...props.siteData}>{html`

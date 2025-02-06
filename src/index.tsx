@@ -5,25 +5,22 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import { poweredBy } from 'hono/powered-by'
 import { logger } from 'hono/logger'
 import type { SessionDataTypes } from '@modules/types.ts'
-import { Session } from 'hono-sessions'
-import sessionMiddleware from '@middleware/session.ts'
+import {SessionMiddleware} from '@middleware/session.ts'
+import type {SessionSettings} from '@middleware/session.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
 
 const app = new Hono<{
-    Variables: {
-        session: Session<SessionDataTypes>,
-        session_key_rotation: boolean
-    }
+    Variables: SessionSettings
 }>()
+
 app.use(poweredBy())
 app.use(logger())
 app.use(csrf())
 app.use('/static/*', serveStatic({ root: './' }))
 
-
-app.use('*', sessionMiddleware());
+app.use('*', SessionMiddleware());
 app.use('/member/*',authMiddleware);
 
 app.get('/', (c) => {

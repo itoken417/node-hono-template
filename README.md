@@ -1,5 +1,12 @@
+
+
+
 ```
 npm install
+node ./setup/create_env.js
+```
+
+```
 npm run dev
 ```
 

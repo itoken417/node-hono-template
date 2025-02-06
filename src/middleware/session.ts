@@ -1,11 +1,12 @@
-import { sessionMiddleware, CookieStore} from 'hono-sessions'
+import { sessionMiddleware, Session, CookieStore} from 'hono-sessions'
+import type { SessionDataTypes } from '@modules/types.ts'
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const store = new CookieStore()
 
-export default () => {
+export const SessionMiddleware = () => {
    return sessionMiddleware({
         store,
         encryptionKey: process.env.SESSION_SECRET_KEY,
@@ -17,4 +18,9 @@ export default () => {
         },
     })
 }
+
+export type SessionSettings = {
+    session: Session<SessionDataTypes>,
+    session_key_rotation: boolean
+};
 

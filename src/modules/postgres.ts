@@ -20,9 +20,9 @@ class db {
     public client: any;
     public cursor: any;
     async init() {
-        console.log('db init')
+        // console.log('db init')
         this.client = await pool.connect();
-        console.log(this)
+        // console.log(this)
     }
     public async execute(sql: string, params = []) {
         return (await this.client.query(sql, params)).rows;
@@ -58,7 +58,7 @@ class db {
 const getdb = async () => {
     const postgres = new db();
     await postgres.init();
-    console.log(postgres);
+//    console.log(postgres);
     return postgres;
 };
 

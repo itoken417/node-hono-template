@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
-import { Top } from '@pages/top.tsx'
+import { Page } from '@pages/member.tsx'
 
 const memberCtl = new Hono().basePath('/member')
 
 memberCtl.get('/', async (c) => {
-    const member = c.member;
+//    console.log(c);
+    const member = c.get('member');
 
-    const messages = ['Welcome']
-    return c.html(<Top messages={messages} />)
+    return c.html(<Page member={member} />)
 })
 
 export {memberCtl}
