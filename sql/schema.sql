@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: member; Type: TABLE; Schema: public; Owner: app
+-- Name: member; Type: TABLE; Schema: public
 --
 
 CREATE TABLE public.member (
@@ -32,11 +32,8 @@ CREATE TABLE public.member (
     update_time timestamp without time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE public.member OWNER TO app;
-
 --
--- Name: member_id_seq; Type: SEQUENCE; Schema: public; Owner: app
+-- Name: member_id_seq; Type: SEQUENCE; Schema: public
 --
 
 CREATE SEQUENCE public.member_id_seq
@@ -47,25 +44,22 @@ CREATE SEQUENCE public.member_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.member_id_seq OWNER TO app;
-
 --
--- Name: member_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: app
+-- Name: member_id_seq; Type: SEQUENCE OWNED BY; Schema: public
 --
 
 ALTER SEQUENCE public.member_id_seq OWNED BY public.member.id;
 
 
 --
--- Name: member id; Type: DEFAULT; Schema: public; Owner: app
+-- Name: member id; Type: DEFAULT; Schema: public
 --
 
 ALTER TABLE ONLY public.member ALTER COLUMN id SET DEFAULT nextval('public.member_id_seq'::regclass);
 
 
 --
--- Name: member member_pkey; Type: CONSTRAINT; Schema: public; Owner: app
+-- Name: member member_pkey; Type: CONSTRAINT; Schema: public
 --
 
 ALTER TABLE ONLY public.member
@@ -75,4 +69,3 @@ ALTER TABLE ONLY public.member
 --
 -- PostgreSQL database dump complete
 --
-

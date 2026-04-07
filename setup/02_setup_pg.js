@@ -18,15 +18,16 @@ const askQuestion = (question) =>
     console.log('=== PG setup ===');
     const envVars = { ...process.env };
     if (envVars.PG_PASSWORD) {
-        envVars.PGPASSWORD = envVars.DB_PASSWORD;
+        envVars.PGPASSWORD = envVars.PG_PASSWORD;
     }
+    const pgPortOption = envVars.PG_PORT ? `-p ${envVars.PG_PORT}` : '';
     console.log('データベースが存在しているか確認。');
-    const checkDbExists = `psql -h ${process.env.PG_HOST} -U ${process.env.PG_USER} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${process.env.PG_DATABASE}';"`;
+    const checkDbExists = `psql -h ${process.env.PG_HOST} ${pgPortOption} -U ${process.env.PG_USER} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${process.env.PG_DATABASE}';"`;
 
     const dbExists = execSync(checkDbExists, { env: envVars, encoding: "utf-8" }).trim();
     if (dbExists !== "1") {
         console.log(`データベース '${process.env.PG_DATABASE}' が見つからないので、. 作成...`);
-        execSync(`createdb -h ${process.env.PG_HOST} -U ${process.env.PG_USER} ${process.env.PG_DATABASE}`, {
+        execSync(`createdb -h ${process.env.PG_HOST} ${pgPortOption} -U ${process.env.PG_USER} ${process.env.PG_DATABASE}`, {
             stdio: "inherit",
             env: envVars,
         });
@@ -47,7 +48,7 @@ const askQuestion = (question) =>
         console.log("スキーマの流し込み...");
         // スキーマを流し込み
 
-        execSync(`psql -h ${process.env.PG_HOST} -U ${process.env.PG_USER} -d ${process.env.PG_DATABASE} -f ${schema_path}`, {
+        execSync(`psql -v ON_ERROR_STOP=1 -h ${process.env.PG_HOST} ${pgPortOption} -U ${process.env.PG_USER} -d ${process.env.PG_DATABASE} -f ${schema_path}`, {
             stdio: "inherit",
             env: envVars,
         });
