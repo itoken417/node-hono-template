@@ -26,6 +26,8 @@ const defaultConfig = {
     PG_PASSWORD: '',
     PG_DATABASE: 'database',
     SESSION_SECRET_KEY : '',
+    APP_PEPPER: '',
+    LOG_DIR: 'logs',
     NODE_ENV: 'development',
 };
 
@@ -34,7 +36,7 @@ const defaultConfig = {
     const config = {};
 
     for (const [key, defaultValue] of Object.entries(defaultConfig)) {
-        if(key.endsWith('_KEY')){
+        if(key.endsWith('_KEY') || key.endsWith('_PEPPER')){
             const answer = await askQuestion(
                 `${key} generate: yes / no /[input value]:`
             );

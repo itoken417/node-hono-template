@@ -42,7 +42,6 @@ class db {
         await this.client.query("ROLLBACK");
     }
     public set_cursor(sql: string, values : string[], config?: any): void {
-        console.log(values);
         this.cursor = new Cursor(sql, values, config);
     }
     public close_cursor(): void {

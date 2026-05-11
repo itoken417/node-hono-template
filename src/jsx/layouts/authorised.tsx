@@ -14,7 +14,11 @@ export const Layout = (props: SiteData) => html`
 </head>
     <body>
         <header>
-        <nav><a href="/member/logout">logout</a></nav>
+        <nav>
+            <form method="post" action="/member/logout">
+                <button type="submit">logout</button>
+            </form>
+        </nav>
         </header>
         ${props.children}
     </body>

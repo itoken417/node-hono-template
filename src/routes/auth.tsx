@@ -3,6 +3,7 @@ import { html } from 'hono/html'
 import { validator } from 'hono/validator'
 import { Auth } from '@pages/auth.tsx'
 import { pool, cursor } from '@modules/postgres.ts'
+import { verifyPassword, DUMMY_HASH } from '@modules/crypto.ts'
 import type { SiteData } from '@modules/types.ts'
 
 const authCtl = new Hono().basePath('/auth')
@@ -29,8 +30,6 @@ authCtl.get('/', async (c) => {
 
 authCtl.post('/', 
     validator('form', (form) => {
-
-        console.log('validator :',form);
         const login_id = form.login_id;
         const password = form.password;
         const error : Error = {login_id :"",password : ""};
@@ -43,7 +42,6 @@ authCtl.post('/',
             error["password"] = html`<div class="err">パスワードが空</div>`;
             error_flag = true;
         }
-        console.log(error);
         if(error_flag){
             return {error : error};
         }
@@ -63,21 +61,21 @@ authCtl.post('/',
         }else{
             const login_id = form.login_id as string;
             const password = form.password as string;
-            const sql = `SELECT * FROM member
-                WHERE 
-                    login_id = $1 AND password = $2 
+            const sql = `SELECT id, login_id, password FROM member
+                WHERE login_id = $1
                 ORDER BY id LIMIT 1;`;
-            const csr = cursor(sql,[login_id,password]);
+            const csr = cursor(sql, [login_id]);
             const client = await pool.connect();
             const itr = client.query(csr);
             const member = await itr.read(1);
             csr.close();
-            client.release()
-console.log(member)
-            if(member.length){
+            client.release();
+            const storedHash = member.length > 0 ? member[0].password : DUMMY_HASH;
+            const passwordMatch = await verifyPassword(password, storedHash);
+            if(member.length > 0 && passwordMatch){
+                c.set('session_key_rotation', true);
                 const session = c.get('session');
-                const id = session.set('login',member[0].id);
-                console.log(session);
+                session.set('login', member[0].id);
                 return c.redirect('/member',302);
             }
             props.error = {login_id:html`` , password:html``} as Error;

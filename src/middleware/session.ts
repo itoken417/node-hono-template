@@ -13,8 +13,9 @@ export const SessionMiddleware = () => {
         expireAfterSeconds: 900,
         cookieOptions: {
             sameSite: 'Lax',
-            path: '/', 
+            path: '/',
             httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
         },
     })
 }

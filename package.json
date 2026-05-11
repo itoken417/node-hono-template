@@ -11,7 +11,8 @@
     "hono-sessions": "^0.7.1",
     "pg": "^8.13.1",
     "pg-cursor": "^2.12.1",
-    "pg-pool": "^3.7.0"
+    "pg-pool": "^3.7.0",
+    "pino": "^10.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
