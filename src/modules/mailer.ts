@@ -1,11 +1,15 @@
 import nodemailer from 'nodemailer';
 
-const isRelease = process.env.NODE_ENV === 'production';
+const isConfigured = !!(
+    process.env.SMTP_HOST &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASSWORD
+);
 
-const transporter = isRelease
+const transporter = isConfigured
     ? nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT ?? 587),
+        host:   process.env.SMTP_HOST,
+        port:   Number(process.env.SMTP_PORT ?? 587),
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
             user: process.env.SMTP_USER,
@@ -18,7 +22,7 @@ export async function sendMail(to: string, subject: string, body: string): Promi
     const from = process.env.SYSTEM_MAIL;
     if (!from) return;
 
-    if (!isRelease || !transporter) {
+    if (!isConfigured || !transporter) {
         console.log(`[sendMail] to=${to} subject=${subject}\n${body}`);
         return;
     }
@@ -26,7 +30,7 @@ export async function sendMail(to: string, subject: string, body: string): Promi
 }
 
 export async function sendErrorMail(subject: string, body: string): Promise<void> {
-    if (!isRelease || !transporter) return;
+    if (!isConfigured || !transporter) return;
 
     const to = process.env.ERROR_TO;
     const from = process.env.SYSTEM_MAIL;
