@@ -9,13 +9,14 @@ const appName = process.env.APP_NAME || 'MyApp'
 export const Layout = (props: SiteData) => html`
 <!doctype html>
 <html>
-<head>
-    <link href="/static/css/main.css" rel="stylesheet">
+<head prefix="og: http://ogp.me/ns#">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="${props.description}">
-    <head prefix="og: http://ogp.me/ns#">
     <meta property="og:type" content="article">
     <meta property="og:title" content="${appName}">
     <title>${appName}${props.title ? ` | ${props.title}` : ''}</title>
+    <link href="/static/css/main.css" rel="stylesheet">
 </head>
     <body>
         <header>

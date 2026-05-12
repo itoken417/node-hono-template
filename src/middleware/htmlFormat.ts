@@ -1,5 +1,7 @@
 import { createMiddleware } from 'hono/factory'
-import { html_beautify } from 'js-beautify'
+import beautify from 'js-beautify'
+
+const { html_beautify } = beautify
 
 export const htmlFormatMiddleware = createMiddleware(async (c, next) => {
     await next()
