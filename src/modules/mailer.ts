@@ -30,7 +30,7 @@ export async function sendMail(to: string, subject: string, body: string): Promi
 }
 
 export async function sendErrorMail(subject: string, body: string): Promise<void> {
-    if (!isConfigured || !transporter) return;
+    if (!isConfigured || !transporter || process.env.NODE_ENV !== 'production') return;
 
     const to = process.env.ERROR_TO;
     const from = process.env.SYSTEM_MAIL;
