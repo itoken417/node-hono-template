@@ -80,13 +80,13 @@ export const kanaNum = (label: string): Rule => (value) =>
         : `${label}はカタカナ・数字で入力してください`
 
 // n 以上（value >= n）
-export const minVal = (label: string, n: number): Rule => (value) => {
+export const moreEq = (label: string, n: number): Rule => (value) => {
     const v = Number(value)
     return !isNaN(v) && v >= n ? null : `${label}は${n}以上で入力してください`
 }
 
 // n 以下（value <= n）
-export const maxVal = (label: string, n: number): Rule => (value) => {
+export const lessEq = (label: string, n: number): Rule => (value) => {
     const v = Number(value)
     return !isNaN(v) && v <= n ? null : `${label}は${n}以下で入力してください`
 }
