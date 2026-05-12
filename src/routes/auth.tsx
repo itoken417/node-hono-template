@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { Auth } from '@pages/auth.tsx'
 import { pool, cursor } from '@modules/postgres.ts'
-import { verifyPassword, DUMMY_HASH } from '@modules/crypto.ts'
+import { verifyPassword, DUMMY_HASH, DUMMY_SALT } from '@modules/crypto.ts'
 import { validate, req, maxLen } from '@modules/validator.ts'
 import type { SiteData } from '@modules/types.ts'
 
@@ -23,7 +23,7 @@ authCtl.post('/', async (c) => {
 
     const login_id = form.login_id as string
     const password = form.password as string
-    const sql = `SELECT id, login_id, password FROM member
+    const sql = `SELECT id, login_id, password, salt FROM member
         WHERE login_id = $1
         ORDER BY id LIMIT 1;`
     const csr = cursor(sql, [login_id])
@@ -33,7 +33,8 @@ authCtl.post('/', async (c) => {
     csr.close()
     client.release()
     const storedHash = member.length > 0 ? member[0].password : DUMMY_HASH
-    const passwordMatch = await verifyPassword(password, storedHash)
+    const storedSalt = member.length > 0 ? member[0].salt : DUMMY_SALT
+    const passwordMatch = await verifyPassword(password, storedHash, storedSalt)
     if (member.length > 0 && passwordMatch) {
         c.set('session_key_rotation', true)
         const session = c.get('session')
