@@ -51,11 +51,14 @@ async function hashPassword(password) {
     const pepperedPassword = `${pepper}:${password}`;
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = await scrypt(pepperedPassword, salt, 64);
-    return `${salt}:${hash.toString('hex')}`;
+    return { salt, hash: hash.toString('hex') };
 }
 
 (async () => {
     console.log('=== メンバー追加 ===');
+    console.log('このスクリプトは、ログイン ID とパスワードを入力してメンバーテーブルに登録します。');
+    console.log('パスワードは scrypt + pepper でハッシュ化して保存されます。');
+    console.log('');
 
     const login_id = await askQuestion('login_id: ');
     if (!login_id.trim()) {
@@ -99,10 +102,10 @@ async function hashPassword(password) {
             process.exit(1);
         }
 
-        const hashed = await hashPassword(password);
+        const { salt, hash } = await hashPassword(password);
         const result = await client.query(
-            'INSERT INTO member (login_id, password) VALUES ($1, $2) RETURNING id',
-            [login_id.trim(), hashed]
+            'INSERT INTO member (login_id, password, salt) VALUES ($1, $2, $3) RETURNING id',
+            [login_id.trim(), hash, salt]
         );
 
         console.log(`メンバーを追加しました (id: ${result.rows[0].id})`);

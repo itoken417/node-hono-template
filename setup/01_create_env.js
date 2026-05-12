@@ -40,6 +40,10 @@ const defaultConfig = {
 
 (async () => {
     console.log('=== .env File Generator ===');
+    console.log('このスクリプトは、アプリケーションの環境変数を対話形式で入力し、');
+    console.log('.env ファイルを生成します。');
+    console.log('SESSION_SECRET_KEY / APP_PEPPER はランダム生成（yes）を推奨します。');
+    console.log('');
     const config = {};
 
     for (const [key, defaultValue] of Object.entries(defaultConfig)) {

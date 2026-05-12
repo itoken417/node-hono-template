@@ -28,6 +28,7 @@ CREATE TABLE public.member (
     id integer NOT NULL,
     login_id text NOT NULL,
     password text NOT NULL,
+    salt text NOT NULL,
     create_time timestamp without time zone DEFAULT now() NOT NULL,
     update_time timestamp without time zone DEFAULT now() NOT NULL
 );

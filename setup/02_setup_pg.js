@@ -16,6 +16,9 @@ const askQuestion = (question) =>
 
 (async () => {
     console.log('=== PG setup ===');
+    console.log('このスクリプトは、.env の設定をもとに PostgreSQL の初期セットアップを行います。');
+    console.log('データベースが存在しない場合は作成し、sql/schema.sql を適用します。');
+    console.log('');
     const envVars = { ...process.env };
     if (envVars.PG_PASSWORD) {
         envVars.PGPASSWORD = envVars.PG_PASSWORD;

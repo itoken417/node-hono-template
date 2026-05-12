@@ -14,17 +14,17 @@ const getPepper = (): string => {
 
 const applyPepper = (password: string): string => `${getPepper()}:${password}`;
 
-export async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<{ salt: string; hash: string }> {
     const salt = crypto.randomBytes(16).toString('hex');
     const hash = (await scrypt(applyPepper(password), salt, 64)) as Buffer;
-    return `${salt}:${hash.toString('hex')}`;
+    return { salt, hash: hash.toString('hex') };
 }
 
 // ユーザー不在時にも scrypt を必ず実行してタイミング差をなくすためのダミー値
-export const DUMMY_HASH = '0'.repeat(32) + ':' + '0'.repeat(128);
+export const DUMMY_SALT = '0'.repeat(32);
+export const DUMMY_HASH = '0'.repeat(128);
 
-export async function verifyPassword(password: string, stored: string): Promise<boolean> {
-    const [salt, storedHash] = stored.split(':');
+export async function verifyPassword(password: string, storedHash: string, salt: string): Promise<boolean> {
     if (!salt || !storedHash) return false;
     const hash = (await scrypt(applyPepper(password), salt, 64)) as Buffer;
     const storedHashBuffer = Buffer.from(storedHash, 'hex');
