@@ -33,13 +33,22 @@ export function decryptValue(ciphertext: string): string {
 
 // process.env 内の enc: 値をすべて復号して上書きする
 export function decryptEnv(): void {
-    for (const [key, value] of Object.entries(process.env)) {
-        if (value?.startsWith(ENC_PREFIX)) {
-            try {
-                process.env[key] = decryptValue(value)
-            } catch (e) {
-                throw new Error(`環境変数 ${key} の復号に失敗しました: ${(e as Error).message}`)
-            }
+    const encrypted = Object.entries(process.env).filter(([, v]) => v?.startsWith(ENC_PREFIX))
+    if (encrypted.length === 0) return
+
+    // enc: 値が存在する場合のみキーを要求する
+    if (!process.env.APP_ENV_KEY) {
+        throw new Error(
+            '.env に暗号化された値がありますが .env.key が見つかりません。\n' +
+            'setup/01_create_env.js を再実行してください。'
+        )
+    }
+
+    for (const [key, value] of encrypted) {
+        try {
+            process.env[key] = decryptValue(value!)
+        } catch (e) {
+            throw new Error(`環境変数 ${key} の復号に失敗しました: ${(e as Error).message}`)
         }
     }
 }
