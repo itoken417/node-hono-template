@@ -14,13 +14,15 @@ export const Layout = (props: SiteData) => html`
 </head>
     <body>
         <header>
-        <nav>
-            <form method="post" action="/member/logout">
-                <button type="submit">logout</button>
-            </form>
-        </nav>
+            <nav>
+                <form method="post" action="/member/logout">
+                    <button type="submit">ログアウト</button>
+                </form>
+            </nav>
         </header>
-        ${props.children}
+        <main>
+            ${props.children}
+        </main>
     </body>
 </html>
 `

@@ -1,3 +1,184 @@
+/* ===== リセット・ベース ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --color-bg:       #f4f6f8;
+    --color-surface:  #ffffff;
+    --color-border:   #dde1e7;
+    --color-primary:  #3b6ef8;
+    --color-primary-hover: #2b5ce6;
+    --color-danger:   #e03e3e;
+    --color-text:     #1a1d23;
+    --color-muted:    #6b7280;
+    --color-nav-bg:   #1a1d23;
+    --color-nav-text: #f4f6f8;
+    --radius:         8px;
+    --shadow:         0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 body {
-	background-color:#cccccc;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ===== ヘッダー・ナビ ===== */
+header {
+    background-color: var(--color-nav-bg);
+    color: var(--color-nav-text);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+nav {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* ===== ナビブランド ===== */
+.nav-brand {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-nav-text);
+    letter-spacing: 0.05em;
+    margin-right: auto;
+}
+
+/* ===== ログアウトボタン（nav内） ===== */
+nav form {
+    margin: 0;
+}
+
+nav button[type="submit"] {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius);
+    color: var(--color-nav-text);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 16px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+nav button[type="submit"]:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== メインコンテンツ ===== */
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--color-text);
+}
+
+p {
+    color: var(--color-muted);
+    margin-bottom: 12px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-muted);
+}
+
+/* ===== ログインフォーム ===== */
+form:not(nav form) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 60px auto 0;
+    max-width: 400px;
+    padding: 36px 32px;
+}
+
+form:not(nav form) span {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted);
+    margin-bottom: 4px;
+    letter-spacing: 0.03em;
+}
+
+form:not(nav form) input[type="text"],
+form:not(nav form) input[type="password"] {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    outline: none;
+    padding: 10px 14px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 100%;
+}
+
+form:not(nav form) input[type="text"]:focus,
+form:not(nav form) input[type="password"]:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 110, 248, 0.15);
+}
+
+form:not(nav form) input[type="submit"] {
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 8px;
+    padding: 12px;
+    transition: background-color 0.15s;
+    width: 100%;
+}
+
+form:not(nav form) input[type="submit"]:hover {
+    background-color: var(--color-primary-hover);
+}
+
+/* ===== バリデーションエラー ===== */
+.err {
+    background-color: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: var(--radius);
+    color: var(--color-danger);
+    font-size: 13px;
+    padding: 8px 12px;
+}
+
+/* ===== エラーページ ===== */
+h1 + p {
+    font-size: 16px;
+    color: var(--color-muted);
 }

@@ -14,9 +14,13 @@ export const Layout = (props: SiteData) => html`
 </head>
     <body>
         <header>
-        <nav>test</nav>
+            <nav>
+                <span class="nav-brand">MyApp</span>
+            </nav>
         </header>
-        ${props.children}
+        <main>
+            ${props.children}
+        </main>
     </body>
 </html>
 `
