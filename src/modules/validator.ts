@@ -98,7 +98,7 @@ export const lessThan = (label: string, n: number): Rule => (value) => {
 }
 
 // n より大きい（value > n）
-export const greaterThan = (label: string, n: number): Rule => (value) => {
+export const moreThan = (label: string, n: number): Rule => (value) => {
     const v = Number(value)
     return !isNaN(v) && v > n ? null : `${label}は${n}より大きい値を入力してください`
 }
