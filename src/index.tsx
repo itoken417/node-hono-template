@@ -1,3 +1,4 @@
+import '@modules/check_env.ts'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { csrf } from 'hono/csrf'
@@ -10,7 +11,9 @@ import { accessLogMiddleware } from '@middleware/accessLog.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
-import { errorLogger } from '@modules/logger.ts'
+import { errorCtl } from '@routes/sample/error'
+import { mailCtl } from '@routes/sample/mail'
+import { onError, notFound } from '@modules/exception.ts'
 
 const app = new Hono<{
     Variables: SessionSettings
@@ -30,16 +33,11 @@ app.get('/', (c) => {
 
 app.route('/',authCtl);
 app.route('/',memberCtl);
+app.route('/',errorCtl);
+app.route('/',mailCtl);
 
-app.onError((err, c) => {
-    errorLogger.error({
-        message: err.message,
-        stack:   err.stack,
-        method:  c.req.method,
-        url:     c.req.path,
-    });
-    return c.text('Internal Server Error', 500);
-});
+app.notFound(notFound);
+app.onError(onError);
 
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);

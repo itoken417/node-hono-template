@@ -20,6 +20,15 @@ const askQuestion = (question) =>
 
 // デフォルトの設定値（必要に応じて調整）
 const defaultConfig = {
+    NODE_ENV: 'development',
+    LOG_DIR: 'logs',
+    SYSTEM_MAIL: '',
+    ERROR_TO: '',
+    SMTP_HOST: '',
+    SMTP_PORT: '587',
+    SMTP_SECURE: 'false',
+    SMTP_USER: '',
+    SMTP_PASSWORD: '',
     PG_HOST: 'localhost',
     PG_PORT: '5432',
     PG_USER: 'app',
@@ -27,8 +36,6 @@ const defaultConfig = {
     PG_DATABASE: 'database',
     SESSION_SECRET_KEY : '',
     APP_PEPPER: '',
-    LOG_DIR: 'logs',
-    NODE_ENV: 'development',
 };
 
 (async () => {
