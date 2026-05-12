@@ -18,15 +18,15 @@ const transporter = isConfigured
     })
     : null;
 
-export async function sendMail(to: string, subject: string, body: string): Promise<void> {
+export async function sendMail(to: string, subject: string, body: string, replyTo?: string): Promise<void> {
     const from = process.env.SYSTEM_MAIL;
     if (!from) return;
 
     if (!isConfigured || !transporter) {
-        console.log(`[sendMail] to=${to} subject=${subject}\n${body}`);
+        console.log(`[sendMail] to=${to} replyTo=${replyTo ?? '-'} subject=${subject}\n${body}`);
         return;
     }
-    await transporter.sendMail({ from, to, subject, text: body });
+    await transporter.sendMail({ from, to, subject, text: body, ...(replyTo && { replyTo }) });
 }
 
 export async function sendErrorMail(subject: string, body: string): Promise<void> {

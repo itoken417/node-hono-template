@@ -33,10 +33,11 @@ mailCtl.post('/',
             return c.html(<MailForm error={form.error} />)
         }
 
-        const to = process.env.SYSTEM_MAIL ?? form.email
+        const to = process.env.SYSTEM_MAIL
+        if (!to) return c.html(<MailForm sent={true} />)
         const subject = `[お問い合わせ] ${form.subject}`
         const body = `お名前: ${form.name}\nメール: ${form.email}\n\n${form.message}`
-        await sendMail(to, subject, body)
+        await sendMail(to, subject, body, form.email)
 
         return c.html(<MailForm sent={true} />)
     }
