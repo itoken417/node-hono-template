@@ -2,7 +2,7 @@ import type { Context } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { errorLogger } from '@modules/logger.ts'
 import { sendErrorMail } from '@modules/mailer.ts'
-import { ErrorPage } from '@jsx/pages/error.tsx'
+import { ErrorPage } from '@pages/error.tsx'
 
 const HTTP_MESSAGES: Record<number, string> = {
     400: 'Bad Request',
