@@ -8,6 +8,7 @@ import type { SessionDataTypes } from '@modules/types.ts'
 import { SessionMiddleware } from '@middleware/session.ts'
 import type { SessionSettings } from '@middleware/session.ts'
 import { accessLogMiddleware } from '@middleware/accessLog.ts'
+import { htmlFormatMiddleware } from '@middleware/htmlFormat.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
@@ -24,6 +25,10 @@ app.use(poweredBy())
 app.use(csrf())
 app.use('/static/*', serveStatic({ root: './' }))
 app.use(accessLogMiddleware)
+
+if (process.env.NODE_ENV !== 'production') {
+    app.use('*', htmlFormatMiddleware)
+}
 
 app.use('*', SessionMiddleware());
 app.use('/member/*',authMiddleware);
