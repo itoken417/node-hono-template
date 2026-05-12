@@ -13,6 +13,7 @@ import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
 import { errorCtl } from '@routes/sample/error'
 import { mailCtl } from '@routes/sample/mail'
+import { dumpCtl } from '@routes/sample/dump'
 import { onError, notFound } from '@modules/exception.ts'
 
 const app = new Hono<{
@@ -35,6 +36,7 @@ app.route('/',authCtl);
 app.route('/',memberCtl);
 app.route('/',errorCtl);
 app.route('/',mailCtl);
+app.route('/',dumpCtl);
 
 app.notFound(notFound);
 app.onError(onError);
