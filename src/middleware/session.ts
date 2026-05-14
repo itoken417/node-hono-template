@@ -12,7 +12,8 @@ export const SessionMiddleware = () => {
         encryptionKey: process.env.SESSION_SECRET_KEY,
         expireAfterSeconds: 900,
         cookieOptions: {
-            sameSite: 'Lax',
+            // Strict: クロスサイトリクエストでは一切クッキーを送信しない
+            sameSite: 'Strict',
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',

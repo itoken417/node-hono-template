@@ -15,8 +15,14 @@ export function validate(
     return errors
 }
 
+// 半角・全角スペースを除去してからルールを適用
+export const _delSp = (rule: Rule): Rule => (value) =>
+    typeof value === 'string'
+        ? rule(value.replace(/[ \u3000]/g, ''))
+        : rule(value)
+
 export const req = (label: string): Rule => (value) =>
-    !value || typeof value !== 'string' || value.trim() === ''
+    !value || typeof value !== 'string' || value.replace(/[ \u3000]/g, '') === ''
         ? `${label}を入力してください`
         : null
 
@@ -37,17 +43,19 @@ export const maxLen = (label: string, max: number): Rule => (value) =>
         ? null
         : `${label}は${max}文字以内で入力してください`
 
-// ひらがな（長音符「ー」U+30FC を含む）
-export const hira = (label: string): Rule => (value) =>
-    typeof value === 'string' && /^[ぁ-ゖー]+$/.test(value)
+// ひらがな U+3041(ぁ)〜U+3096(ゖ)、長音符 U+30FC(ー) を含む
+export const hira = (label: string): Rule => _delSp((value) =>
+    typeof value === 'string' && /^[\u3041-\u3096\u30FC]+$/.test(value)
         ? null
         : `${label}はひらがなで入力してください`
+)
 
-// カタカナ（長音符「ー」U+30FC を含む）
-export const kana = (label: string): Rule => (value) =>
-    typeof value === 'string' && /^[ァ-ヶー]+$/.test(value)
+// カタカナ U+30A1(ァ)〜U+30F6(ヶ)、長音符 U+30FC(ー) を含む
+export const kana = (label: string): Rule => _delSp((value) =>
+    typeof value === 'string' && /^[\u30A1-\u30F6\u30FC]+$/.test(value)
         ? null
         : `${label}はカタカナで入力してください`
+)
 
 // 印字可能 ASCII（U+0020〜U+007E）
 export const ascii = (label: string): Rule => (value) =>
@@ -67,17 +75,19 @@ export const num = (label: string): Rule => (value) =>
         ? null
         : `${label}は数字で入力してください`
 
-// ひらがな＋数字（長音符「ー」を含む）
-export const hiraNum = (label: string): Rule => (value) =>
-    typeof value === 'string' && /^[ぁ-ゖー0-9]+$/.test(value)
+// ひらがな U+3041〜U+3096 ＋数字、長音符 U+30FC を含む
+export const hiraNum = (label: string): Rule => _delSp((value) =>
+    typeof value === 'string' && /^[\u3041-\u3096\u30FC0-9]+$/.test(value)
         ? null
         : `${label}はひらがな・数字で入力してください`
+)
 
-// カタカナ＋数字（長音符「ー」を含む）
-export const kanaNum = (label: string): Rule => (value) =>
-    typeof value === 'string' && /^[ァ-ヶー0-9]+$/.test(value)
+// カタカナ U+30A1〜U+30F6 ＋数字、長音符 U+30FC を含む
+export const kanaNum = (label: string): Rule => _delSp((value) =>
+    typeof value === 'string' && /^[\u30A1-\u30F6\u30FC0-9]+$/.test(value)
         ? null
         : `${label}はカタカナ・数字で入力してください`
+)
 
 // n 以上（value >= n）
 export const moreEq = (label: string, n: number): Rule => (value) => {

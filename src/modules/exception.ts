@@ -10,15 +10,31 @@ const HTTP_MESSAGES: Record<number, string> = {
     403: 'Forbidden',
     404: 'Not Found',
     405: 'Method Not Allowed',
+    413: 'Request Entity Too Large',
     422: 'Unprocessable Entity',
     429: 'Too Many Requests',
 }
+
+const PARSE_ERROR_PATTERNS = [
+    'boundary',
+    'multipart',
+    'Could not parse',
+    'invalid content-type',
+    'content-type',
+]
 
 export const onError = (err: Error, c: Context) => {
     if (err instanceof HTTPException) {
         const status = err.status
         const message = HTTP_MESSAGES[status] ?? err.message
         return c.html(ErrorPage({ status, message }), status)
+    }
+    // リクエストボディの解析失敗は 400 として処理（ログ・メール通知不要）
+    if (err instanceof TypeError) {
+        const msg = err.message.toLowerCase()
+        if (PARSE_ERROR_PATTERNS.some(p => msg.includes(p))) {
+            return c.html(ErrorPage({ status: 400, message: 'Bad Request' }), 400)
+        }
     }
     errorLogger.error({
         message: err.message,

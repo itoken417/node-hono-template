@@ -3,6 +3,7 @@ import { Auth } from '@pages/auth.tsx'
 import { pool, cursor } from '@modules/postgres.ts'
 import { verifyPassword, DUMMY_HASH, DUMMY_SALT } from '@modules/crypto.ts'
 import { validate, req, maxLen } from '@modules/validator.ts'
+import { safeParseBody } from '@modules/parser.ts'
 import type { SiteData } from '@modules/types.ts'
 
 const authCtl = new Hono().basePath('/auth')
@@ -12,7 +13,7 @@ const siteData: SiteData = { title: 'auth page', description: 'test page' }
 authCtl.get('/', (c) => c.html(<Auth siteData={siteData} />))
 
 authCtl.post('/', async (c) => {
-    const form = await c.req.parseBody()
+    const form = await safeParseBody(c)
     const errors = validate(form, {
         login_id: [req('ログインID'), maxLen('ログインID', 255)],
         password: [req('パスワード'), maxLen('パスワード', 255)],
