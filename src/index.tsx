@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { csrf } from 'hono/csrf'
 import { bodyLimit } from 'hono/body-limit'
 import { secureHeaders } from 'hono/secure-headers'
+import { HTTPException } from 'hono/http-exception'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { poweredBy } from 'hono/powered-by'
 import type { SessionDataTypes } from '@modules/types.ts'
@@ -19,7 +20,6 @@ import { errorCtl } from '@routes/sample/error'
 import { mailCtl } from '@routes/sample/mail'
 import { dumpCtl } from '@routes/sample/dump'
 import { onError, notFound } from '@modules/exception.ts'
-import { ErrorPage } from '@pages/error.tsx'
 
 const app = new Hono<{
     Variables: SessionSettings
@@ -31,7 +31,7 @@ app.use(csrf())
 app.use('/static/*', serveStatic({ root: './' }))
 app.use(bodyLimit({
     maxSize: 1 * 1024 * 1024, // 1MB
-    onError: (c) => c.html(ErrorPage({ status: 413, message: 'Request Entity Too Large' }), 413),
+    onError: () => { throw new HTTPException(413) },
 }))
 app.use(accessLogMiddleware)
 app.post('/auth', authRateLimiter)
