@@ -1,5 +1,6 @@
 import type { Context } from 'hono'
-import { HTTPException } from 'hono/http-exception'
+
+export class ParseError extends Error {}
 
 export async function safeParseBody(
     c: Context
@@ -7,6 +8,6 @@ export async function safeParseBody(
     try {
         return await c.req.parseBody()
     } catch {
-        throw new HTTPException(400, { message: 'Bad Request' })
+        throw new ParseError()
     }
 }
