@@ -10,11 +10,7 @@ import { accessLogMiddleware } from '@middleware/accessLog.ts'
 import { htmlFormatMiddleware } from '@middleware/htmlFormat.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
 import { securityMiddlewares } from '@middleware/security.ts'
-import { authCtl } from '@routes/auth'
-import { memberCtl } from '@routes/member'
-import { errorCtl } from '@routes/sample/error'
-import { mailCtl } from '@routes/sample/mail'
-import { dumpCtl } from '@routes/sample/dump'
+import { routes } from '@routes/index'
 import { onError, notFound } from '@modules/exception.ts'
 
 const app = new Hono<{
@@ -37,11 +33,7 @@ app.get('/', (c) => {
     return c.text('Hello Hono!')
 })
 
-app.route('/',authCtl);
-app.route('/',memberCtl);
-app.route('/',errorCtl);
-app.route('/',mailCtl);
-app.route('/',dumpCtl);
+routes(app)
 
 app.notFound(notFound);
 app.onError(onError);
