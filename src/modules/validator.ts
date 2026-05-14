@@ -63,6 +63,17 @@ export const ascii = (label: string): Rule => (value) =>
         ? null
         : `${label}はASCII文字で入力してください`
 
+// パスワードポリシー: 英字・数字・記号を含む8文字以上
+export const password = (label: string): Rule => (value) => {
+    if (typeof value !== 'string') return `${label}を入力してください`
+    if (value.length < 8)                         return `${label}は8文字以上で入力してください`
+    if (!/[A-Za-z]/.test(value))                  return `${label}は英字を含めてください`
+    if (!/[0-9]/.test(value))                     return `${label}は数字を含めてください`
+    if (!/[\x21-\x2F\x3A-\x40\x5B-\x60\x7B-\x7E]/.test(value))
+                                                   return `${label}は記号を含めてください`
+    return null
+}
+
 // 半角英数字のみ
 export const alnum = (label: string): Rule => (value) =>
     typeof value === 'string' && /^[A-Za-z0-9]+$/.test(value)
