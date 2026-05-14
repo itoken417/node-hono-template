@@ -49,7 +49,7 @@ function makeRateLimiter(windowMs: number, max: number) {
 
 const authRateLimiter = makeRateLimiter(15 * 60 * 1000, 10)
 
-export function applySecurityMiddleware(app: Hono<any>) {
+export function securityMiddlewares(app: Hono<any>) {
     app.use(securityHeaders)
     app.use(csrfProtection)
     app.use(requestSizeLimit)

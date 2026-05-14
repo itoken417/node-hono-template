@@ -9,7 +9,7 @@ import type { SessionSettings } from '@middleware/session.ts'
 import { accessLogMiddleware } from '@middleware/accessLog.ts'
 import { htmlFormatMiddleware } from '@middleware/htmlFormat.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
-import { applySecurityMiddleware } from '@middleware/security.ts'
+import { securityMiddlewares } from '@middleware/security.ts'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
 import { errorCtl } from '@routes/sample/error'
@@ -22,7 +22,7 @@ const app = new Hono<{
 }>()
 
 app.use(poweredBy())
-applySecurityMiddleware(app)
+securityMiddlewares(app)
 app.use('/static/*', serveStatic({ root: './' }))
 app.use(accessLogMiddleware)
 
