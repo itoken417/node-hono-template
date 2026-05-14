@@ -1,10 +1,6 @@
 import '@modules/check_env.ts'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import { csrf } from 'hono/csrf'
-import { bodyLimit } from 'hono/body-limit'
-import { secureHeaders } from 'hono/secure-headers'
-import { HTTPException } from 'hono/http-exception'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { poweredBy } from 'hono/powered-by'
 import type { SessionDataTypes } from '@modules/types.ts'
@@ -13,7 +9,7 @@ import type { SessionSettings } from '@middleware/session.ts'
 import { accessLogMiddleware } from '@middleware/accessLog.ts'
 import { htmlFormatMiddleware } from '@middleware/htmlFormat.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
-import { authRateLimiter } from '@middleware/rateLimit.ts'
+import { securityHeaders, csrfProtection, requestSizeLimit, authRateLimiter } from '@middleware/security.ts'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
 import { errorCtl } from '@routes/sample/error'
@@ -26,13 +22,10 @@ const app = new Hono<{
 }>()
 
 app.use(poweredBy())
-app.use(secureHeaders())
-app.use(csrf())
+app.use(securityHeaders)
+app.use(csrfProtection)
 app.use('/static/*', serveStatic({ root: './' }))
-app.use(bodyLimit({
-    maxSize: 1 * 1024 * 1024, // 1MB
-    onError: () => { throw new HTTPException(413) },
-}))
+app.use(requestSizeLimit)
 app.use(accessLogMiddleware)
 app.post('/auth', authRateLimiter)
 

@@ -1,15 +1,26 @@
-import { createMiddleware } from 'hono/factory'
+import { secureHeaders } from 'hono/secure-headers'
+import { csrf } from 'hono/csrf'
+import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
+import { createMiddleware } from 'hono/factory'
+
+export const securityHeaders = secureHeaders()
+
+export const csrfProtection = csrf()
+
+export const requestSizeLimit = bodyLimit({
+    maxSize: 1 * 1024 * 1024, // 1MB
+    onError: () => { throw new HTTPException(413) },
+})
 
 interface Entry {
     count: number
     resetAt: number
 }
 
-function makeStore(windowMs: number, max: number) {
+function makeRateLimiter(windowMs: number, max: number) {
     const store = new Map<string, Entry>()
 
-    // 古いエントリを定期的に削除してメモリリークを防ぐ
     setInterval(() => {
         const now = Date.now()
         for (const [key, entry] of store) {
@@ -29,13 +40,11 @@ function makeStore(windowMs: number, max: number) {
             store.set(ip, { count: 1, resetAt: now + windowMs })
         } else {
             entry.count++
-            if (entry.count > max) {
-                throw new HTTPException(429)
-            }
+            if (entry.count > max) throw new HTTPException(429)
         }
         await next()
     })
 }
 
 // ログイン試行: 15分間に10回まで
-export const authRateLimiter = makeStore(15 * 60 * 1000, 10)
+export const authRateLimiter = makeRateLimiter(15 * 60 * 1000, 10)
