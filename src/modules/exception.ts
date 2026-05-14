@@ -40,3 +40,8 @@ export const onError = (err: Error, c: Context) => {
 export const notFound = (c: Context) => {
     return c.html(ErrorPage({ status: 404, message: 'Not Found' }), 404);
 };
+
+export function errorHandlers(app: { notFound: Function; onError: Function }) {
+    app.notFound(notFound)
+    app.onError(onError)
+}
