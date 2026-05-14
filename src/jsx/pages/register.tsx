@@ -4,7 +4,7 @@ import { Layout } from '@layouts/public.tsx'
 type RegisterProps = {
     siteData: SiteData
     errors?: Record<string, string>
-    values?: { login_id?: string }
+    values?: { login_id?: string; email?: string }
 }
 
 export const Register = ({ siteData, errors, values }: RegisterProps) => (
@@ -15,6 +15,10 @@ export const Register = ({ siteData, errors, values }: RegisterProps) => (
             <span>ログインID</span>
             <input name="login_id" type="text" value={values?.login_id ?? ''} />
 
+            {errors?.email && <div class="err">{errors.email}</div>}
+            <span>メールアドレス</span>
+            <input name="email" type="email" value={values?.email ?? ''} />
+
             {errors?.password && <div class="err">{errors.password}</div>}
             <span>パスワード</span>
             <input name="password" type="password" />
@@ -23,7 +27,7 @@ export const Register = ({ siteData, errors, values }: RegisterProps) => (
             <span>パスワード（確認）</span>
             <input name="password_confirm" type="password" />
 
-            <input type="submit" value="登録" />
+            <input type="submit" value="確認メールを送信" />
         </form>
         <p><a href="/auth">ログインはこちら</a></p>
     </Layout>

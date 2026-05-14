@@ -31,3 +31,13 @@ export async function verifyPassword(password: string, storedHash: string, salt:
     if (hash.length !== storedHashBuffer.length) return false;
     return crypto.timingSafeEqual(hash, storedHashBuffer);
 }
+
+export function hashEmail(email: string): string {
+    const pepper = process.env.APP_PEPPER;
+    if (!pepper) throw new Error('APP_PEPPER が .env に設定されていません');
+    return crypto.createHmac('sha256', pepper).update(email.toLowerCase()).digest('hex');
+}
+
+export function generateVerifyCode(): string {
+    return String(crypto.randomInt(100000, 999999));
+}
