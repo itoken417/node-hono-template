@@ -16,5 +16,6 @@ export const Auth = ({ siteData, errors }: AuthProps) => (
             <span>パスワード</span><input name="password" type="password" />
             <input type="submit" value="ログイン" />
         </form>
+        <p><a href="/auth/register">新規登録はこちら</a></p>
     </Layout>
 )
