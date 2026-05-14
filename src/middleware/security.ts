@@ -1,14 +1,15 @@
+import type { Hono } from 'hono'
 import { secureHeaders } from 'hono/secure-headers'
 import { csrf } from 'hono/csrf'
 import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
 import { createMiddleware } from 'hono/factory'
 
-export const securityHeaders = secureHeaders()
+const securityHeaders = secureHeaders()
 
-export const csrfProtection = csrf()
+const csrfProtection = csrf()
 
-export const requestSizeLimit = bodyLimit({
+const requestSizeLimit = bodyLimit({
     maxSize: 1 * 1024 * 1024, // 1MB
     onError: () => { throw new HTTPException(413) },
 })
@@ -46,5 +47,11 @@ function makeRateLimiter(windowMs: number, max: number) {
     })
 }
 
-// ログイン試行: 15分間に10回まで
-export const authRateLimiter = makeRateLimiter(15 * 60 * 1000, 10)
+const authRateLimiter = makeRateLimiter(15 * 60 * 1000, 10)
+
+export function applySecurityMiddleware(app: Hono<any>) {
+    app.use(securityHeaders)
+    app.use(csrfProtection)
+    app.use(requestSizeLimit)
+    app.post('/auth', authRateLimiter)
+}

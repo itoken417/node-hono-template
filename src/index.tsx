@@ -9,7 +9,7 @@ import type { SessionSettings } from '@middleware/session.ts'
 import { accessLogMiddleware } from '@middleware/accessLog.ts'
 import { htmlFormatMiddleware } from '@middleware/htmlFormat.ts'
 import { authMiddleware } from '@middleware/auth.tsx'
-import { securityHeaders, csrfProtection, requestSizeLimit, authRateLimiter } from '@middleware/security.ts'
+import { applySecurityMiddleware } from '@middleware/security.ts'
 import { authCtl } from '@routes/auth'
 import { memberCtl } from '@routes/member'
 import { errorCtl } from '@routes/sample/error'
@@ -22,12 +22,9 @@ const app = new Hono<{
 }>()
 
 app.use(poweredBy())
-app.use(securityHeaders)
-app.use(csrfProtection)
+applySecurityMiddleware(app)
 app.use('/static/*', serveStatic({ root: './' }))
-app.use(requestSizeLimit)
 app.use(accessLogMiddleware)
-app.post('/auth', authRateLimiter)
 
 if (process.env.NODE_ENV !== 'production') {
     app.use('*', htmlFormatMiddleware)
