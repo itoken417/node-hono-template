@@ -10,7 +10,9 @@
     "baseUrl":"./",
     "paths": {
         "@modules/*" : ["./src/modules/*"],
-        "@routes/*" : ["./src/routes/*"],
+        "@routes"    : ["./src/routes.ts"],
+        "@routes/*"  : ["./src/routes/*"],
+        "@middleware" : ["./src/middleware/index.ts"],
         "@middleware/*" : ["./src/middleware/*"],
         "@layouts/*" : ["./src/jsx/layouts/*"],
         "@pages/*" : ["./src/jsx/pages/*"],
