@@ -41,7 +41,3 @@ export function hashEmail(email: string): string {
 export function generateVerifyCode(): string {
     return String(crypto.randomInt(100000, 999999));
 }
-
-export function generateFormToken(): string {
-    return crypto.randomBytes(32).toString('hex')
-}

@@ -1,4 +1,5 @@
 import { Layout } from '@layouts/public.tsx'
+import { HoneypotField } from '@components/HoneypotField.tsx'
 
 type MailFormProps = {
     error?: {
@@ -23,9 +24,7 @@ export const MailForm = (props: MailFormProps) => (
             <>
                 <h1>お問い合わせ</h1>
                 <form method="post" class="mail-form">
-                    <div class="field-optional" inert="">
-                        <input type="text" name="website" autocomplete="off" />
-                    </div>
+                    <HoneypotField />
                     <input type="hidden" name="_token" value={props.token ?? ''} />
 
                     <div class="field">

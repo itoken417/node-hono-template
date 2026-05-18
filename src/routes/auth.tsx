@@ -4,16 +4,20 @@ import { pool, cursor } from '@modules/postgres.ts'
 import { verifyPassword, DUMMY_HASH, DUMMY_SALT } from '@modules/crypto.ts'
 import { validate, req, maxLen } from '@modules/validator.ts'
 import { safeParseBody } from '@modules/parser.ts'
+import { issueFormToken, consumeFormToken, isHoneypot } from '@modules/formToken.ts'
 import type { SiteData } from '@modules/types.ts'
 
 const authCtl = new Hono().basePath('/auth')
 
 const siteData: SiteData = { title: 'auth page', description: 'test page' }
 
-authCtl.get('/', (c) => c.html(<Auth siteData={siteData} />))
+authCtl.get('/', (c) => c.html(<Auth siteData={siteData} token={issueFormToken(c)} />))
 
 authCtl.post('/', async (c) => {
     const form = await safeParseBody(c)
+    if (isHoneypot(form)) return c.redirect('/auth', 302)
+    if (!consumeFormToken(c, form._token)) return c.redirect('/auth', 302)
+
     const errors = validate(form, {
         login_id: [req('ログインID'), maxLen('ログインID', 255)],
         password: [req('パスワード'), maxLen('パスワード', 255)],

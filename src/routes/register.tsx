@@ -7,6 +7,7 @@ import { encryptValue } from '@modules/env_crypto.ts'
 import { sendMail } from '@modules/mailer.ts'
 import { validate, req, maxLen, email, password } from '@modules/validator.ts'
 import { safeParseBody } from '@modules/parser.ts'
+import { issueFormToken, consumeFormToken, isHoneypot } from '@modules/formToken.ts'
 import type { SiteData } from '@modules/types.ts'
 
 const registerCtl = new Hono().basePath('/auth/register')
@@ -14,10 +15,12 @@ const registerCtl = new Hono().basePath('/auth/register')
 const siteData: SiteData = { title: '新規登録' }
 const verifySiteData: SiteData = { title: 'メールアドレス確認' }
 
-registerCtl.get('/', (c) => c.html(<Register siteData={siteData} />))
+registerCtl.get('/', (c) => c.html(<Register siteData={siteData} token={issueFormToken(c)} />))
 
 registerCtl.post('/', async (c) => {
     const form = await safeParseBody(c)
+    if (isHoneypot(form)) return c.redirect('/auth/register', 302)
+    if (!consumeFormToken(c, form._token)) return c.redirect('/auth/register', 302)
 
     const errors = validate(form, {
         login_id:         [req('ログインID'), maxLen('ログインID', 255)],
@@ -84,15 +87,17 @@ registerCtl.post('/', async (c) => {
 registerCtl.get('/verify', (c) => {
     const session = c.get('session')
     if (!session.get('pending_register')) return c.redirect('/auth/register', 302)
-    return c.html(<Verify siteData={verifySiteData} />)
+    return c.html(<Verify siteData={verifySiteData} token={issueFormToken(c)} />)
 })
 
 registerCtl.post('/verify', async (c) => {
+    const form   = await safeParseBody(c)
+    if (isHoneypot(form)) return c.redirect('/auth/register/verify', 302)
+    if (!consumeFormToken(c, form._token)) return c.redirect('/auth/register/verify', 302)
+
     const session  = c.get('session')
     const login_id = session.get('pending_register')
     if (!login_id) return c.redirect('/auth/register', 302)
-
-    const form   = await safeParseBody(c)
     const errors = validate(form, { code: [req('確認コード')] })
     if (Object.keys(errors).length > 0) {
         return c.html(<Verify siteData={verifySiteData} errors={errors} />)
