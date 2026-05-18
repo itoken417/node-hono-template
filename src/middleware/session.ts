@@ -6,7 +6,7 @@ dotenv.config();
 
 const store = new CookieStore()
 
-export const SessionMiddleware = () => {
+export const session = () => {
    return sessionMiddleware({
         store,
         encryptionKey: process.env.SESSION_SECRET_KEY,

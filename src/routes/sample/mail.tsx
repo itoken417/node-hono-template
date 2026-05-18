@@ -3,6 +3,7 @@ import { MailForm } from '@pages/sample/mail.tsx'
 import { sendMail } from '@modules/mailer.ts'
 import { validate, req, email } from '@modules/validator.ts'
 import { safeParseBody } from '@modules/parser.ts'
+import { generateFormToken } from '@modules/crypto.ts'
 
 const mailCtl = new Hono().basePath('/sample/mail')
 
@@ -18,11 +19,23 @@ const CONTACT_LABELS: Record<string, string> = {
 }
 
 mailCtl.get('/', (c) => {
-    return c.html(<MailForm />)
+    const token = generateFormToken()
+    const session = c.get('session')
+    session.set('mail_token', token)
+    return c.html(<MailForm token={token} />)
 })
 
 mailCtl.post('/', async (c) => {
+    const session = c.get('session')
+    const sessionToken = session.get('mail_token')
+    session.set('mail_token', undefined)
+
     const form = await safeParseBody(c)
+    // ハニーポット: ボットが入力した場合は送信済みに見せて無視する
+    if (form.website) return c.html(<MailForm sent={true} />)
+    // フォームトークン検証: GETを踏まずに直接POSTされた場合はフォームへ戻す
+    if (!sessionToken || form._token !== sessionToken) return c.redirect('/sample/mail', 302)
+
     const errors = validate(form, {
         name:    [req('お名前')],
         email:   [req('メールアドレス'), email('メールアドレス')],

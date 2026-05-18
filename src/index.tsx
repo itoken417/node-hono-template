@@ -2,7 +2,7 @@ import '@modules/check_env.ts'
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import type { SessionSettings } from '@middleware/session.ts'
-import { securityMiddlewares } from '@middleware/security.ts'
+import { security } from '@middleware/security.ts'
 import { middlewares } from '@middleware'
 import { routes } from '@routes'
 import { errorHandlers } from '@modules/exception.ts'
@@ -11,7 +11,7 @@ const app = new Hono<{
     Variables: SessionSettings
 }>()
 
-securityMiddlewares(app)
+security(app)
 middlewares(app)
 
 app.get('/', (c) => c.text('Hello Hono!'))

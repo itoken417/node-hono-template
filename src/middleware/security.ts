@@ -48,10 +48,12 @@ function makeRateLimiter(windowMs: number, max: number) {
 }
 
 const authRateLimiter = makeRateLimiter(15 * 60 * 1000, 10)
+const mailRateLimiter = makeRateLimiter(10 * 60 * 1000, 3)
 
-export function securityMiddlewares(app: Hono<any>) {
+export function security(app: Hono<any>) {
     app.use(securityHeaders)
     app.use(csrfProtection)
     app.use(requestSizeLimit)
     app.post('/auth', authRateLimiter)
+    app.post('/sample/mail', mailRateLimiter)
 }

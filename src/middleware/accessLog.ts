@@ -1,7 +1,7 @@
 import { createMiddleware } from 'hono/factory';
 import { accessLogger } from '@modules/logger.ts';
 
-export const accessLogMiddleware = createMiddleware(async (c, next) => {
+export const accessLog = createMiddleware(async (c, next) => {
     const start = Date.now();
     await next();
     accessLogger.info({

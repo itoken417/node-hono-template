@@ -3,7 +3,7 @@ import beautify from 'js-beautify'
 
 const { html_beautify } = beautify
 
-export const htmlFormatMiddleware = createMiddleware(async (c, next) => {
+export const htmlFormat = createMiddleware(async (c, next) => {
     await next()
     const contentType = c.res.headers.get('content-type') ?? ''
     if (!contentType.includes('text/html')) return

@@ -2,7 +2,7 @@ import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
 import { getdb } from '@modules/postgres.ts'
 
-export const authMiddleware = createMiddleware(async (c, next) => {
+export const auth = createMiddleware(async (c, next) => {
     const session = c.get('session');
     const id = session.get('login');
     let member;

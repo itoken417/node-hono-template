@@ -8,6 +8,7 @@ type MailFormProps = {
         message?: string
     }
     sent?: boolean
+    token?: string
 }
 
 export const MailForm = (props: MailFormProps) => (
@@ -22,6 +23,10 @@ export const MailForm = (props: MailFormProps) => (
             <>
                 <h1>お問い合わせ</h1>
                 <form method="post" class="mail-form">
+                    <div class="field-optional" inert="">
+                        <input type="text" name="website" autocomplete="off" />
+                    </div>
+                    <input type="hidden" name="_token" value={props.token ?? ''} />
 
                     <div class="field">
                         <label for="name">お名前</label>
