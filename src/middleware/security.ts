@@ -3,8 +3,11 @@ import { secureHeaders } from 'hono/secure-headers'
 import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
 import { createMiddleware } from 'hono/factory'
+import { errorLogger } from '@modules/logger.ts'
 
-const securityHeaders = secureHeaders()
+const securityHeaders = secureHeaders({
+    referrerPolicy: 'strict-origin-when-cross-origin',
+})
 
 // nginx等のリバースプロキシを考慮したオリジン取得
 const getRequestOrigin = (c: Context): string => {
@@ -25,12 +28,29 @@ const csrfProtection = createMiddleware(async (c, next) => {
         const origin  = c.req.header('origin')
         const referer = c.req.header('referer')
 
-        const allowed =
-            (origin !== undefined && origin === requestOrigin) ||
-            (origin === undefined && referer !== undefined &&
-                (() => { try { return new URL(referer).origin === requestOrigin } catch { return false } })())
+        const originOk  = origin !== undefined && origin !== 'null' && origin === requestOrigin
+        const refererOk = (origin === undefined || origin === 'null') && referer !== undefined &&
+            (() => { try { return new URL(referer).origin === requestOrigin } catch { return false } })()
+        const opaque    = origin === 'null' && referer === undefined
 
-        if (!allowed) throw new HTTPException(403)
+        if (!originOk && !refererOk && !opaque) {
+            errorLogger.error({
+                msg:           'CSRF blocked',
+                method:        c.req.method,
+                path:          c.req.path,
+                requestOrigin,
+                origin:        origin  ?? '(none)',
+                referer:       referer ?? '(none)',
+            })
+            throw new HTTPException(403)
+        }
+        if (opaque) {
+            errorLogger.warn({
+                msg:    'CSRF opaque origin — passed to form token check',
+                method: c.req.method,
+                path:   c.req.path,
+            })
+        }
     }
 
     await next()
