@@ -231,9 +231,31 @@ systemctl start  ${serviceName}
 systemctl enable ${serviceName}
 systemctl status ${serviceName}
 
-# 6. 証明書の自動更新
-echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\
-  > /etc/cron.d/certbot-renew
+# 6. 証明書の自動更新（systemd timer）
+cat > /etc/systemd/system/certbot-renew.service <<'ENDSVC'
+[Unit]
+Description=certbot renew
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/certbot renew --quiet --deploy-hook "systemctl reload nginx"
+ENDSVC
+
+cat > /etc/systemd/system/certbot-renew.timer <<'ENDTMR'
+[Unit]
+Description=certbot renew timer
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+RandomizedDelaySec=3600
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+ENDTMR
+
+systemctl daemon-reload
+systemctl enable --now certbot-renew.timer
 
 echo ""
 echo "完了！ https://${domain} でアクセスできます。"
