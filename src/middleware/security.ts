@@ -1,4 +1,5 @@
-import type { Hono, Context } from 'hono'
+import type { Hono } from 'hono'
+import { csrf } from 'hono/csrf'
 import { secureHeaders } from 'hono/secure-headers'
 import { bodyLimit } from 'hono/body-limit'
 import { HTTPException } from 'hono/http-exception'
@@ -9,51 +10,27 @@ const securityHeaders = secureHeaders({
     referrerPolicy: 'strict-origin-when-cross-origin',
 })
 
-// nginx等のリバースプロキシを考慮したオリジン取得
-const getRequestOrigin = (c: Context): string => {
-    const proto = c.req.header('x-forwarded-proto') ?? new URL(c.req.url).protocol.replace(':', '')
-    const host  = c.req.header('x-forwarded-host') ?? c.req.header('host') ?? new URL(c.req.url).host
-    return `${proto}://${host}`
-}
+// リバースプロキシを考慮したオリジン検証
+const csrfProtection = csrf({
+    origin: (origin, c) => {
+        // /api/ は除外
+        if (c.req.path.startsWith('/api/')) return true
 
-const csrfProtection = createMiddleware(async (c, next) => {
-    if (c.req.path.startsWith('/api/')) return next()
-
-    const isSafeMethod  = /^(GET|HEAD)$/.test(c.req.method)
-    const isFormRequest = /^\b(application\/x-www-form-urlencoded|multipart\/form-data|text\/plain)\b/i
-        .test(c.req.header('content-type') || 'text/plain')
-
-    if (!isSafeMethod && isFormRequest) {
-        const requestOrigin = getRequestOrigin(c)
-        const origin  = c.req.header('origin')
-        const referer = c.req.header('referer')
-
-        const originOk  = origin !== undefined && origin !== 'null' && origin === requestOrigin
-        const refererOk = (origin === undefined || origin === 'null') && referer !== undefined &&
-            (() => { try { return new URL(referer).origin === requestOrigin } catch { return false } })()
-        const opaque    = origin === 'null' && referer === undefined
-
-        if (!originOk && !refererOk && !opaque) {
-            errorLogger.error({
-                msg:           'CSRF blocked',
-                method:        c.req.method,
-                path:          c.req.path,
-                requestOrigin,
-                origin:        origin  ?? '(none)',
-                referer:       referer ?? '(none)',
-            })
-            throw new HTTPException(403)
+        // opaque origin（HTTP→HTTPSリダイレクト後等）はformTokenに委譲
+        if (origin === 'null') {
+            errorLogger.warn({ msg: 'CSRF opaque origin — passed to form token check', path: c.req.path })
+            return true
         }
-        if (opaque) {
-            errorLogger.warn({
-                msg:    'CSRF opaque origin — passed to form token check',
-                method: c.req.method,
-                path:   c.req.path,
-            })
-        }
-    }
 
-    await next()
+        const proto = c.req.header('x-forwarded-proto') ?? new URL(c.req.url).protocol.replace(':', '')
+        const host  = c.req.header('x-forwarded-host') ?? c.req.header('host') ?? new URL(c.req.url).host
+        const requestOrigin = `${proto}://${host}`
+
+        if (origin !== requestOrigin) {
+            errorLogger.error({ msg: 'CSRF blocked', path: c.req.path, origin, requestOrigin })
+        }
+        return origin === requestOrigin
+    },
 })
 
 const requestSizeLimit = bodyLimit({
