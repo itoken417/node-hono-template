@@ -49,4 +49,4 @@ authCtl.post('/', async (c) => {
     return c.html(<Auth siteData={siteData} errors={{ login_id: 'ログインIDまたはパスワードが正しくありません' }} />)
 })
 
-export { authCtl }
+export { authCtl as auth }

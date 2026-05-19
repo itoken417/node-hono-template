@@ -14,7 +14,6 @@ const app = new Hono<{
 security(app)
 middlewares(app)
 
-app.get('/', (c) => c.text('Hello Hono!'))
 routes(app)
 
 errorHandlers(app)

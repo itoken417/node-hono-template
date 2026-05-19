@@ -14,5 +14,5 @@ memberCtl.post('/logout', async (c) => {
     return c.redirect('/auth', 302);
 })
 
-export {memberCtl}
+export { memberCtl as member }
 

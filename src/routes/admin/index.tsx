@@ -21,4 +21,4 @@ adminCtl.get('/', async (c) => {
     return c.html(<AdminIndex members={members} />)
 })
 
-export { adminCtl }
+export { adminCtl as admin }

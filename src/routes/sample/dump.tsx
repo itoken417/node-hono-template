@@ -12,4 +12,4 @@ const sampleData = {
 
 dumpCtl.get('/', (c) => c.html(<DumpPage data={sampleData} />))
 
-export { dumpCtl }
+export { dumpCtl as sampleDump }

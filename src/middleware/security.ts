@@ -7,7 +7,12 @@ import { createMiddleware } from 'hono/factory'
 
 const securityHeaders = secureHeaders()
 
-const csrfProtection = csrf()
+const _csrf = csrf()
+// APIルートはAPIキー認証を使うためCSRF対象外
+const csrfProtection = createMiddleware(async (c, next) => {
+    if (c.req.path.startsWith('/api/')) return next()
+    return _csrf(c, next)
+})
 
 const requestSizeLimit = bodyLimit({
     maxSize: 1 * 1024 * 1024, // 1MB

@@ -49,4 +49,4 @@ adminAuthCtl.post('/logout', (c) => {
     return c.redirect('/admin/auth', 302)
 })
 
-export { adminAuthCtl }
+export { adminAuthCtl as adminAuth }

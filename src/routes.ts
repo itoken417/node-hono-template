@@ -1,20 +1,28 @@
 import type { Hono } from 'hono'
-import { authCtl } from '@routes/auth'
-import { registerCtl } from '@routes/register'
-import { memberCtl } from '@routes/member'
-import { adminAuthCtl } from '@routes/admin/auth'
-import { adminCtl } from '@routes/admin/index'
-import { errorCtl } from '@routes/sample/error'
-import { mailCtl } from '@routes/sample/mail'
-import { dumpCtl } from '@routes/sample/dump'
+import { top } from '@routes/top.tsx'
+import { auth } from '@routes/auth'
+import { register } from '@routes/register'
+import { member } from '@routes/member'
+import { adminAuth } from '@routes/admin/auth'
+import { admin } from '@routes/admin/index'
+import { sampleError } from '@routes/sample/error'
+import { sampleMail } from '@routes/sample/mail'
+import { sampleDump } from '@routes/sample/dump'
+import { api } from '@routes/api'
+import { apiSample } from '@routes/api/sample'
+import { sampleApi } from '@routes/sample/api.tsx'
 
 export function routes(app: Hono<any>) {
-    app.route('/', authCtl)
-    app.route('/', registerCtl)
-    app.route('/', memberCtl)
-    app.route('/', adminAuthCtl)
-    app.route('/', adminCtl)
-    app.route('/', errorCtl)
-    app.route('/', mailCtl)
-    app.route('/', dumpCtl)
+    app.route('/', top)
+    app.route('/', auth)
+    app.route('/', register)
+    app.route('/', member)
+    app.route('/', adminAuth)
+    app.route('/', admin)
+    app.route('/', sampleError)
+    app.route('/', sampleMail)
+    app.route('/', sampleDump)
+    app.route('/', api)
+    app.route('/', apiSample)
+    app.route('/', sampleApi)
 }

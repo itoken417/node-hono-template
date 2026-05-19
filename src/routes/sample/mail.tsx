@@ -60,4 +60,4 @@ mailCtl.post('/', async (c) => {
     return c.html(<MailForm sent={true} />)
 })
 
-export { mailCtl }
+export { mailCtl as sampleMail }

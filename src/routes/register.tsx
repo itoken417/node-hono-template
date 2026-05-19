@@ -132,4 +132,4 @@ registerCtl.post('/verify', async (c) => {
     return c.redirect('/auth', 302)
 })
 
-export { registerCtl }
+export { registerCtl as register }
