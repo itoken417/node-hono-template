@@ -40,9 +40,36 @@ git clone https://github.com/itoken417/node-hono-template.git ./[プロジェク
 ```
 cd ./[プロジェクト名]
 npm install
-node ./setup/01_create_env.js
-node ./setup/02_setup_pg.js
+```
 
+`.env` を生成する
+
+```
+node ./setup/01_create_env.js
+```
+
+データベースとテーブルを作成する
+
+```
+node ./setup/02_setup_pg.js
+```
+
+管理者アカウントを追加する
+
+```
+node ./setup/03_add_admin.js
+```
+
+一般メンバーアカウントを追加する（必要に応じて）
+
+```
+node ./setup/04_add_member.js
+```
+
+メール送信をテストする（必要に応じて）
+
+```
+node ./setup/05_test_mail.js
 ```
 
 ### とりあえず実行
