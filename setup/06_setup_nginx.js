@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import readline from 'readline';
+import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
 
@@ -15,6 +16,8 @@ const domain  = process.env.APP_DOMAIN;
 const port    = process.env.APP_PORT || '3000';
 const appName = (process.env.APP_NAME || 'app').toLowerCase().replace(/\s+/g, '-');
 const runUser = os.userInfo().username;
+const npmPath  = execSync('which npm').toString().trim();
+const nodeBin  = path.dirname(npmPath);
 
 if (!domain) {
     console.error('APP_DOMAIN が .env に設定されていません。');
@@ -116,10 +119,11 @@ After=network.target
 Type=simple
 User=${runUser}
 WorkingDirectory=${appDir}
-ExecStart=/usr/bin/npm start
+ExecStart=${npmPath} start
 Restart=on-failure
 RestartSec=5s
 Environment=NODE_ENV=production
+Environment=PATH=${nodeBin}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 
 [Install]
 WantedBy=multi-user.target
