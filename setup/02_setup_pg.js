@@ -23,6 +23,7 @@ const askQuestion = (question) =>
     if (envVars.PG_PASSWORD) {
         envVars.PGPASSWORD = envVars.PG_PASSWORD;
     }
+    envVars.PGOPTIONS = '-c TimeZone=Asia/Tokyo';
     const pgPortOption = envVars.PG_PORT ? `-p ${envVars.PG_PORT}` : '';
     console.log('データベースが存在しているか確認。');
     const checkDbExists = `psql -h ${process.env.PG_HOST} ${pgPortOption} -U ${process.env.PG_USER} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${process.env.PG_DATABASE}';"`;
