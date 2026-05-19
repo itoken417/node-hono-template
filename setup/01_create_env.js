@@ -20,6 +20,8 @@ const askQuestion = (question) =>
 // デフォルトの設定値（必要に応じて調整）
 const defaultConfig = {
     APP_NAME: 'MyApp',
+    APP_DOMAIN: '',
+    APP_PORT: '3000',
     NODE_ENV: 'development',
     LOG_DIR: 'logs',
     SYSTEM_MAIL: '',

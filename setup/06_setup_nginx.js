@@ -1,16 +1,22 @@
 import fs from 'fs/promises';
-import readline from 'readline';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { config } from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const rl  = readline.createInterface({ input: process.stdin, output: process.stdout });
-const ask = (q) => new Promise((resolve) => rl.question(q, resolve));
+config({ path: path.resolve(__dirname, '../.env') });
 
-const nginxConf = (domain, port) => `
-server {
+const domain = process.env.APP_DOMAIN;
+const port   = process.env.APP_PORT || '3000';
+
+if (!domain) {
+    console.error('APP_DOMAIN が .env に設定されていません。');
+    process.exit(1);
+}
+
+const nginxConf = `server {
     listen 80;
     server_name ${domain};
     return 301 https://$host$request_uri;
@@ -34,41 +40,27 @@ server {
         proxy_set_header   Connection        'upgrade';
     }
 }
-`.trimStart();
+`;
 
-(async () => {
-    console.log('=== NGINX 設定ファイル生成 ===');
-    console.log('server/etc/nginx/conf.d/ 以下に設定ファイルを生成します。');
-    console.log('');
+const outDir  = path.resolve(__dirname, '../server/etc/nginx/conf.d');
+const outPath = path.join(outDir, `${domain}.conf`);
 
-    const domain = (await ask('ドメイン名 (例: example.com): ')).trim();
-    if (!domain) { console.error('ドメイン名を入力してください。'); rl.close(); process.exit(1); }
+await fs.mkdir(outDir, { recursive: true });
+await fs.writeFile(outPath, nginxConf, 'utf-8');
 
-    const portInput = (await ask('アプリのポート番号 (default: 3000): ')).trim();
-    const port = portInput || '3000';
-
-    rl.close();
-
-    const outDir  = path.resolve(__dirname, '../server/etc/nginx/conf.d');
-    const outPath = path.join(outDir, `${domain}.conf`);
-
-    await fs.mkdir(outDir, { recursive: true });
-    await fs.writeFile(outPath, nginxConf(domain, port), 'utf-8');
-
-    console.log(`\n設定ファイルを生成しました: ${outPath}`);
-    console.log('');
-    console.log('以下の手順を root で実行してください:');
-    console.log('');
-    console.log('# 1. Let\'s Encrypt 証明書取得 (DNS チャレンジ)');
-    console.log(`  certbot certonly --manual --preferred-challenges dns -d ${domain}`);
-    console.log('');
-    console.log('# 2. nginx 設定ファイルをコピー');
-    console.log(`  cp ${outPath} /etc/nginx/conf.d/${domain}.conf`);
-    console.log('');
-    console.log('# 3. nginx テスト & リロード');
-    console.log('  nginx -t && systemctl reload nginx');
-    console.log('');
-    console.log('# 4. 証明書の自動更新 (任意)');
-    console.log('  echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\');
-    console.log('    > /etc/cron.d/certbot-renew');
-})();
+console.log(`設定ファイルを生成しました: ${outPath}`);
+console.log('');
+console.log('以下の手順を root で実行してください:');
+console.log('');
+console.log('# 1. Let\'s Encrypt 証明書取得 (DNS チャレンジ)');
+console.log(`  certbot certonly --manual --preferred-challenges dns -d ${domain}`);
+console.log('');
+console.log('# 2. nginx 設定ファイルをコピー');
+console.log(`  cp ${outPath} /etc/nginx/conf.d/${domain}.conf`);
+console.log('');
+console.log('# 3. nginx テスト & リロード');
+console.log('  nginx -t && systemctl reload nginx');
+console.log('');
+console.log('# 4. 証明書の自動更新 (任意)');
+console.log('  echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\');
+console.log('    > /etc/cron.d/certbot-renew');
