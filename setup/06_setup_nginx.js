@@ -107,7 +107,7 @@ ${sslBlock}
 
     # HTTP-01 チャレンジ用（更新時にも使用）
     location /.well-known/acme-challenge/ {
-        root /var/lib/letsencrypt/;
+        root /var/www/certbot/;
     }
 
     # .env や .git などの隠しファイルへのアクセスを遮断（.well-known は除外）
@@ -195,7 +195,7 @@ echo "更新完了！"
 const rootShHttp = `#!/bin/bash
 set -e
 
-WEBROOT=/var/lib/letsencrypt
+WEBROOT=/var/www/certbot
 
 # 1. webroot ディレクトリ作成
 mkdir -p \$WEBROOT/.well-known/acme-challenge
@@ -206,7 +206,7 @@ server {
     listen 80;
     server_name ${domain};
     location /.well-known/acme-challenge/ {
-        root /var/lib/letsencrypt/;
+        root /var/www/certbot/;
     }
 }
 ENDCONF
