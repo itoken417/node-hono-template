@@ -60,6 +60,11 @@ const sslBlock = `
     gzip_proxied any;
     gzip_types   text/plain text/css text/javascript application/json application/javascript;
 
+    # .env や .git などの隠しファイルへのアクセスを遮断
+    location ~ /\. {
+        deny all;
+    }
+
     location / {
         proxy_pass            http://localhost:${port};
         proxy_http_version    1.1;
@@ -79,7 +84,15 @@ const nginxConf = isDns
     ? `server {
     listen 80;
     server_name ${domain};
-    return 301 https://$host$request_uri;
+
+    # .env や .git などの隠しファイルへのアクセスを遮断
+    location ~ /\. {
+        deny all;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
 }
 
 server {
@@ -95,6 +108,11 @@ ${sslBlock}
     # HTTP-01 チャレンジ用（更新時にも使用）
     location /.well-known/acme-challenge/ {
         root /var/lib/letsencrypt/;
+    }
+
+    # .env や .git などの隠しファイルへのアクセスを遮断（.well-known は除外）
+    location ~ /\.(?!well-known) {
+        deny all;
     }
 
     location / {

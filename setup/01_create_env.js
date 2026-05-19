@@ -139,6 +139,7 @@ function generateSecret() {
         .join('\n');
 
     await fs.writeFile(filepath, envContent, 'utf-8');
+    await fs.chmod(filepath, 0o600);
 
     console.log('\n.env file saved:');
     console.log(envContent);
