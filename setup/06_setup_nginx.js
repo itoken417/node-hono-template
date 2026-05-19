@@ -186,7 +186,7 @@ systemctl enable ${serviceName}
 systemctl status ${serviceName}
 
 # 4. ログローテーション設定
-cp ${logrotateSrcPath} ${logrotateDstPath}
+ln -sf ${logrotateSrcPath} ${logrotateDstPath}
 
 echo ""
 echo "完了！ https://${domain} でアクセスできます。"
