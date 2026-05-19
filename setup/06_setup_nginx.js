@@ -139,6 +139,13 @@ certbot certonly --manual --preferred-challenges dns -d ${domain}
 
 # 2. nginx 設定をシンボリックリンク & 起動
 ln -sf ${confSrcPath} ${confDstPath}
+# nginx がシンボリックリンク先を辿れるよう、パス上のディレクトリに通過権限を付与
+_dir="${confSrcPath}"
+while [ "$_dir" != "/" ]; do
+    _dir=$(dirname "$_dir")
+    chmod o+x "$_dir"
+done
+chmod o+r "${confSrcPath}"
 nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
@@ -194,6 +201,13 @@ certbot certonly --webroot -w \$WEBROOT -d ${domain}
 # 4. 一時設定を削除、本番設定をシンボリックリンク & リロード
 rm /etc/nginx/conf.d/certbot-tmp.conf
 ln -sf ${confSrcPath} ${confDstPath}
+# nginx がシンボリックリンク先を辿れるよう、パス上のディレクトリに通過権限を付与
+_dir="${confSrcPath}"
+while [ "$_dir" != "/" ]; do
+    _dir=$(dirname "$_dir")
+    chmod o+x "$_dir"
+done
+chmod o+r "${confSrcPath}"
 nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
