@@ -134,49 +134,13 @@ npm start
 
 ---
 
-## API 認証
+## APIサンプル
 
-### APIキー発行
+`src/routes/api/` および `src/routes/sample/` 以下を参照。
 
-`X-Issuer-Key` ヘッダーに `.env` の `API_ISSUER_KEY` を指定してPOSTする。
-
-```
-POST /api/key
-X-Issuer-Key: <API_ISSUER_KEY>
-Content-Type: application/json
-
-{ "label": "任意のラベル" }
-```
-
-レスポンス（201）:
-
-```json
-{ "key": "発行されたAPIキー", "label": "任意のラベル" }
-```
-
-### APIリクエスト
-
-発行したAPIキーを `X-API-Key` ヘッダーに付与する。
-
-```
-GET /api/sample/item
-X-API-Key: <発行されたAPIキー>
-```
-
----
-
-## APIサンプルエンドポイント
-
-`/api/sample/item` — すべてのエンドポイントに `X-API-Key` 認証が必要。
-
-| メソッド | パス | 説明 |
-|---------|------|------|
-| `GET` | `/api/sample/item` | アイテム一覧取得 |
-| `GET` | `/api/sample/item/:id` | アイテム1件取得 |
-| `POST` | `/api/sample/item` | アイテム追加 |
-| `DELETE` | `/api/sample/item/:id` | アイテム削除 |
-
-動作確認用のサンプルページは `/sample/api` で参照できる。
+- `src/routes/api.ts` — APIキー発行（`X-Issuer-Key` 認証）
+- `src/routes/api/sample.ts` — サンプルCRUD（`X-API-Key` 認証）
+- `src/routes/sample/api.tsx` — ブラウザから fetch でAPIを叩くサンプルページ（`/sample/api`）
 
 ---
 
