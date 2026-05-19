@@ -32,3 +32,4 @@ lerna-debug.log*
 server/etc/nginx/conf.d/*.conf
 server/etc/systemd/system/*.service
 server/setup_root.sh
+server/renew_cert.sh
