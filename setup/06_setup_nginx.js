@@ -42,25 +42,39 @@ server {
 }
 `;
 
-const outDir  = path.resolve(__dirname, '../server/etc/nginx/conf.d');
-const outPath = path.join(outDir, `${domain}.conf`);
+const confSrcPath = path.resolve(__dirname, `../server/etc/nginx/conf.d/${domain}.conf`);
+const confDstPath = `/etc/nginx/conf.d/${domain}.conf`;
 
-await fs.mkdir(outDir, { recursive: true });
-await fs.writeFile(outPath, nginxConf, 'utf-8');
+const rootSh = `#!/bin/bash
+set -e
 
-console.log(`設定ファイルを生成しました: ${outPath}`);
+# 1. Let's Encrypt 証明書取得 (DNS チャレンジ)
+certbot certonly --manual --preferred-challenges dns -d ${domain}
+
+# 2. nginx 設定ファイルをコピー
+cp ${confSrcPath} ${confDstPath}
+
+# 3. nginx テスト & リロード
+nginx -t && systemctl reload nginx
+
+# 4. 証明書の自動更新
+echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\
+  > /etc/cron.d/certbot-renew
+
+echo "完了！ https://${domain} でアクセスできます。"
+`;
+
+const confDir   = path.resolve(__dirname, '../server/etc/nginx/conf.d');
+const rootShDir = path.resolve(__dirname, '../server');
+const rootShPath = path.join(rootShDir, 'setup_root.sh');
+
+await fs.mkdir(confDir, { recursive: true });
+await fs.writeFile(confSrcPath, nginxConf, 'utf-8');
+await fs.writeFile(rootShPath, rootSh, 'utf-8');
+await fs.chmod(rootShPath, 0o755);
+
+console.log(`nginx 設定ファイル : ${confSrcPath}`);
+console.log(`root 用スクリプト  : ${rootShPath}`);
 console.log('');
-console.log('以下の手順を root で実行してください:');
-console.log('');
-console.log('# 1. Let\'s Encrypt 証明書取得 (DNS チャレンジ)');
-console.log(`  certbot certonly --manual --preferred-challenges dns -d ${domain}`);
-console.log('');
-console.log('# 2. nginx 設定ファイルをコピー');
-console.log(`  cp ${outPath} /etc/nginx/conf.d/${domain}.conf`);
-console.log('');
-console.log('# 3. nginx テスト & リロード');
-console.log('  nginx -t && systemctl reload nginx');
-console.log('');
-console.log('# 4. 証明書の自動更新 (任意)');
-console.log('  echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\');
-console.log('    > /etc/cron.d/certbot-renew');
+console.log('以下を root で実行してください:');
+console.log(`  sudo bash ${rootShPath}`);
