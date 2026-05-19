@@ -18,7 +18,7 @@ routes(app)
 
 errorHandlers(app)
 
-const port = 3000;
+const port = Number(process.env.APP_PORT) || 3000;
 console.log(`Server is running on http://localhost:${port}`);
 
 serve({
