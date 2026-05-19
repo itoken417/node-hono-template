@@ -143,7 +143,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
-ln -sf ${serviceSrcPath} ${serviceDstPath}
+systemctl link ${serviceSrcPath}
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf ${serviceDstPath} /etc/systemd/system/multi-user.target.wants/${serviceName}
 systemctl daemon-reload
@@ -199,7 +199,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
-ln -sf ${serviceSrcPath} ${serviceDstPath}
+systemctl link ${serviceSrcPath}
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf ${serviceDstPath} /etc/systemd/system/multi-user.target.wants/${serviceName}
 systemctl daemon-reload
