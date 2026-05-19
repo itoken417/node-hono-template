@@ -128,7 +128,6 @@ WantedBy=multi-user.target
 const confSrcPath    = path.join(appDir, 'server/etc/nginx/conf.d', `${domain}.conf`);
 const confDstPath    = `/etc/nginx/conf.d/${domain}.conf`;
 const serviceSrcPath = path.join(appDir, 'server/etc/systemd/system', serviceName);
-const serviceDstPath = `/etc/systemd/system/${serviceName}`;
 
 // --- DNS-01 用 root スクリプト ---
 const rootShDns = `#!/bin/bash
@@ -144,10 +143,9 @@ nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
 systemctl link ${serviceSrcPath}
-mkdir -p /etc/systemd/system/multi-user.target.wants
-ln -sf ${serviceDstPath} /etc/systemd/system/multi-user.target.wants/${serviceName}
 systemctl daemon-reload
 systemctl start  ${serviceName}
+systemctl enable ${serviceName}
 systemctl status ${serviceName}
 
 echo ""
@@ -200,10 +198,9 @@ nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
 systemctl link ${serviceSrcPath}
-mkdir -p /etc/systemd/system/multi-user.target.wants
-ln -sf ${serviceDstPath} /etc/systemd/system/multi-user.target.wants/${serviceName}
 systemctl daemon-reload
 systemctl start  ${serviceName}
+systemctl enable ${serviceName}
 systemctl status ${serviceName}
 
 # 6. 証明書の自動更新
