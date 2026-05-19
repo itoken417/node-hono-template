@@ -151,27 +151,6 @@ X-API-Key: <発行されたAPIキー>
 
 ---
 
-## ルート命名規則
-
-`src/routes.ts` でのexport名はファイルパス（`@routes/`以降）をキャメルケースにした名前を使う。
-
-| ファイルパス | export名 |
-|-------------|---------|
-| `routes/top.tsx` | `top` |
-| `routes/auth` | `auth` |
-| `routes/register` | `register` |
-| `routes/member` | `member` |
-| `routes/admin/auth` | `adminAuth` |
-| `routes/admin/index` | `admin` |
-| `routes/sample/error` | `sampleError` |
-| `routes/sample/mail` | `sampleMail` |
-| `routes/sample/dump` | `sampleDump` |
-| `routes/api` | `api` |
-| `routes/api/sample` | `apiSample` |
-| `routes/sample/api.tsx` | `sampleApi` |
-
----
-
 ## モジュール一覧
 
 ### validator.ts
@@ -222,29 +201,3 @@ APIキーのインメモリ管理。サーバー再起動でリセットされ�
 - `issueApiKey(label)` — APIキーを発行して返す
 - `validateApiKey(key)` — APIキーの有効性を検証する
 
----
-
-## 環境変数
-
-| 変数名 | 説明 |
-|--------|------|
-| `APP_NAME` | アプリケーション名（systemdサービス名にも使用） |
-| `APP_DOMAIN` | 本番ドメイン名（nginx設定生成に使用） |
-| `APP_PORT` | リッスンポート（デフォルト: 3000） |
-| `NODE_ENV` | `production` のとき本番モード |
-| `LOG_DIR` | ログ出力ディレクトリ |
-| `SYSTEM_MAIL` | 送信元メールアドレス |
-| `ERROR_TO` | エラー通知の宛先メールアドレス |
-| `SMTP_HOST` | SMTPサーバーホスト |
-| `SMTP_PORT` | SMTPポート（デフォルト: 587） |
-| `SMTP_SECURE` | TLS使用する場合は `true` |
-| `SMTP_USER` | SMTPユーザー名 |
-| `SMTP_PASSWORD` | SMTPパスワード |
-| `PG_HOST` | PostgreSQLホスト |
-| `PG_PORT` | PostgreSQLポート |
-| `PG_USER` | PostgreSQLユーザー |
-| `PG_PASSWORD` | PostgreSQLパスワード |
-| `PG_DATABASE` | データベース名 |
-| `SESSION_SECRET_KEY` | セッション署名キー |
-| `APP_PEPPER` | パスワードハッシュ用ペッパー |
-| `API_ISSUER_KEY` | APIキー発行用の静的キー（`POST /api/key` で使用） |
