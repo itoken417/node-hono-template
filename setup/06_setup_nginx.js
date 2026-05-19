@@ -199,6 +199,8 @@ WEBROOT=/var/www/certbot
 
 # 1. webroot ディレクトリ作成
 mkdir -p \$WEBROOT/.well-known/acme-challenge
+# SELinux: nginx がファイルを読めるようコンテキストを設定
+restorecon -Rv \$WEBROOT 2>/dev/null || chcon -R -t httpd_sys_content_t \$WEBROOT
 
 # 2. 一時 HTTP 設定を作成して nginx を起動 (certbot 検証用)
 cat > /etc/nginx/conf.d/certbot-tmp.conf <<'ENDCONF'
