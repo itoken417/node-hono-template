@@ -147,9 +147,22 @@ Environment=PATH=${nodeBin}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 WantedBy=multi-user.target
 `;
 
-const confSrcPath    = path.join(appDir, 'server/etc/nginx/conf.d', `${domain}.conf`);
-const confDstPath    = `/etc/nginx/conf.d/${domain}.conf`;
-const serviceSrcPath = path.join(appDir, 'server/etc/systemd/system', serviceName);
+const confSrcPath      = path.join(appDir, 'server/etc/nginx/conf.d', `${domain}.conf`);
+const confDstPath      = `/etc/nginx/conf.d/${domain}.conf`;
+const serviceSrcPath   = path.join(appDir, 'server/etc/systemd/system', serviceName);
+const logDir           = process.env.LOG_DIR ? path.resolve(appDir, process.env.LOG_DIR) : path.join(appDir, 'logs');
+const logrotateConf    = `${logDir}/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+}
+`;
+const logrotateSrcPath = path.join(appDir, 'server/etc/logrotate.d', appName);
+const logrotateDstPath = `/etc/logrotate.d/${appName}`;
 
 // --- DNS-01 用 root スクリプト ---
 const rootShDns = `#!/bin/bash
@@ -171,6 +184,9 @@ systemctl daemon-reload
 systemctl start  ${serviceName}
 systemctl enable ${serviceName}
 systemctl status ${serviceName}
+
+# 4. ログローテーション設定
+cp ${logrotateSrcPath} ${logrotateDstPath}
 
 echo ""
 echo "完了！ https://${domain} でアクセスできます。"
@@ -257,15 +273,20 @@ ENDTMR
 systemctl daemon-reload
 systemctl enable --now certbot-renew.timer
 
+# 7. ログローテーション設定
+cp ${logrotateSrcPath} ${logrotateDstPath}
+
 echo ""
 echo "完了！ https://${domain} でアクセスできます。"
 `;
 
 // ファイル生成
-await fs.mkdir(path.dirname(confSrcPath),    { recursive: true });
-await fs.mkdir(path.dirname(serviceSrcPath), { recursive: true });
-await fs.writeFile(confSrcPath,    nginxConf,   'utf-8');
-await fs.writeFile(serviceSrcPath, serviceConf, 'utf-8');
+await fs.mkdir(path.dirname(confSrcPath),      { recursive: true });
+await fs.mkdir(path.dirname(serviceSrcPath),   { recursive: true });
+await fs.mkdir(path.dirname(logrotateSrcPath), { recursive: true });
+await fs.writeFile(confSrcPath,      nginxConf,    'utf-8');
+await fs.writeFile(serviceSrcPath,   serviceConf,  'utf-8');
+await fs.writeFile(logrotateSrcPath, logrotateConf, 'utf-8');
 
 const rootShPath = path.join(appDir, 'server/setup_root.sh');
 await fs.writeFile(rootShPath, isDns ? rootShDns : rootShHttp, 'utf-8');
@@ -280,6 +301,7 @@ if (isDns) {
 
 console.log(`nginx 設定ファイル  : ${confSrcPath}`);
 console.log(`systemd サービス    : ${serviceSrcPath}`);
+console.log(`logrotate 設定      : ${logrotateSrcPath}`);
 console.log(`root 用スクリプト   : ${rootShPath}`);
 console.log('');
 console.log('以下を root で実行してください:');
