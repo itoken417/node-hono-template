@@ -111,6 +111,13 @@ npm start
 
 `src/routes/sample/` 以下を参照。
 
+| ファイル | URL | 説明 |
+|---------|-----|------|
+| `sample/api.tsx` | `/sample/api` | APIキー認証付きREST APIをfetchで叩くサンプルページ |
+| `sample/dump.tsx` | `/sample/dump` | `dumper.ts` の出力確認ページ |
+| `sample/error.tsx` | `/sample/error/:status` | 各HTTPエラー（400/401/403/404/422/429/500）の表示確認 |
+| `sample/mail.tsx` | `/sample/mail` | バリデーション・ハニーポット・フォームトークン付きお問い合わせフォーム |
+
 
 ---
 
