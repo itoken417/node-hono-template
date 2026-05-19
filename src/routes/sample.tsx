@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { SampleIndexPage } from '@pages/sample/index.tsx'
+import { SampleIndexPage } from '@pages/sample.tsx'
 
 const sampleCtl = new Hono().basePath('/sample')
 
