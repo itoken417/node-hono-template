@@ -104,6 +104,8 @@ http://localhost:3000
 
 ### nginx + systemd + Let's Encrypt
 
+CSRF保護はリクエストの `Origin` ヘッダーとサーバー側のオリジンを比較して検証する。ブラウザは `https://` のページからのフォーム送信にのみ `Origin` ヘッダーを付与するため、HTTPSなしでは正常に動作しない。nginx をリバースプロキシとして使い、Let's Encrypt で TLS を終端させることが前提となる。
+
 `.env` に `APP_DOMAIN` と `APP_PORT` を設定したうえでスクリプトを実行する。
 
 ```
