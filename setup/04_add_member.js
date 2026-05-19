@@ -67,6 +67,8 @@ async function hashPassword(password) {
         process.exit(1);
     }
 
+    const email = await askQuestion('email (任意、空でスキップ): ');
+
     const password = await askPassword('password (非表示): ');
     if (!password.trim()) {
         console.error('password は必須です');
@@ -103,9 +105,11 @@ async function hashPassword(password) {
         }
 
         const { salt, hash } = await hashPassword(password);
+        const emailVal  = email.trim() || null;
+        const emailHash = emailVal ? crypto.createHash('sha256').update(emailVal).digest('hex') : null;
         const result = await client.query(
-            'INSERT INTO member (login_id, password, salt) VALUES ($1, $2, $3) RETURNING id',
-            [login_id.trim(), hash, salt]
+            'INSERT INTO member (login_id, email, email_hash, password, salt) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+            [login_id.trim(), emailVal, emailHash, hash, salt]
         );
 
         console.log(`メンバーを追加しました (id: ${result.rows[0].id})`);
