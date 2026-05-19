@@ -2,7 +2,8 @@
   "name": "setup",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.tsx"
+    "dev": "tsx watch src/index.tsx",
+    "start": "tsx src/index.tsx"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
