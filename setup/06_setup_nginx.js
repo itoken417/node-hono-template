@@ -1,10 +1,13 @@
 import fs from 'fs/promises';
-import { execSync } from 'child_process';
 import readline from 'readline';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+const rl  = readline.createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => new Promise((resolve) => rl.question(q, resolve));
-const tryExec = (cmd) => { try { return execSync(cmd, { encoding: 'utf-8' }); } catch { return null; } };
 
 const nginxConf = (domain, port) => `
 server {
@@ -34,27 +37,9 @@ server {
 `.trimStart();
 
 (async () => {
-    console.log('=== NGINX + Let\'s Encrypt セットアップ ===');
-    console.log('このスクリプトは nginx の設定と Let\'s Encrypt 証明書（DNSチャレンジ）を取得します。');
-    console.log('root 権限が必要です。');
+    console.log('=== NGINX 設定ファイル生成 ===');
+    console.log('server/etc/nginx/conf.d/ 以下に設定ファイルを生成します。');
     console.log('');
-
-    if (process.getuid?.() !== 0) {
-        console.error('root で実行してください。(sudo node setup/06_setup_nginx.js)');
-        process.exit(1);
-    }
-
-    if (!tryExec('which nginx')) {
-        console.error('nginx がインストールされていません。');
-        console.error('  例: sudo dnf install nginx  /  sudo apt install nginx');
-        process.exit(1);
-    }
-
-    if (!tryExec('which certbot')) {
-        console.error('certbot がインストールされていません。');
-        console.error('  例: sudo dnf install certbot  /  sudo apt install certbot');
-        process.exit(1);
-    }
 
     const domain = (await ask('ドメイン名 (例: example.com): ')).trim();
     if (!domain) { console.error('ドメイン名を入力してください。'); rl.close(); process.exit(1); }
@@ -64,40 +49,26 @@ server {
 
     rl.close();
 
-    // --- certbot DNS チャレンジ ---
-    console.log('');
-    console.log('=== Let\'s Encrypt 証明書取得 (DNS チャレンジ) ===');
-    console.log('certbot の指示に従い、DNS に TXT レコードを追加してください。');
-    console.log('');
+    const outDir  = path.resolve(__dirname, '../server/etc/nginx/conf.d');
+    const outPath = path.join(outDir, `${domain}.conf`);
 
-    try {
-        execSync(`certbot certonly --manual --preferred-challenges dns -d ${domain}`, {
-            stdio: 'inherit',
-        });
-    } catch {
-        console.error('certbot が失敗しました。証明書が取得できませんでした。');
-        process.exit(1);
-    }
+    await fs.mkdir(outDir, { recursive: true });
+    await fs.writeFile(outPath, nginxConf(domain, port), 'utf-8');
 
-    // --- nginx 設定ファイル ---
-    const confPath = `/etc/nginx/conf.d/${domain}.conf`;
-    await fs.writeFile(confPath, nginxConf(domain, port), 'utf-8');
-    console.log(`\nnginx 設定ファイルを作成しました: ${confPath}`);
-
-    // --- nginx テスト & リロード ---
-    try {
-        execSync('nginx -t', { stdio: 'inherit' });
-        execSync('systemctl reload nginx', { stdio: 'inherit' });
-        console.log('nginx をリロードしました。');
-    } catch {
-        console.error(`nginx の設定テストに失敗しました。${confPath} を確認してください。`);
-        process.exit(1);
-    }
-
+    console.log(`\n設定ファイルを生成しました: ${outPath}`);
     console.log('');
-    console.log(`完了！ https://${domain} でアクセスできます。`);
+    console.log('以下の手順を root で実行してください:');
     console.log('');
-    console.log('証明書の自動更新を有効にする場合:');
+    console.log('# 1. Let\'s Encrypt 証明書取得 (DNS チャレンジ)');
+    console.log(`  certbot certonly --manual --preferred-challenges dns -d ${domain}`);
+    console.log('');
+    console.log('# 2. nginx 設定ファイルをコピー');
+    console.log(`  cp ${outPath} /etc/nginx/conf.d/${domain}.conf`);
+    console.log('');
+    console.log('# 3. nginx テスト & リロード');
+    console.log('  nginx -t && systemctl reload nginx');
+    console.log('');
+    console.log('# 4. 証明書の自動更新 (任意)');
     console.log('  echo "0 3 * * * root certbot renew --quiet && systemctl reload nginx" \\');
     console.log('    > /etc/cron.d/certbot-renew');
 })();
