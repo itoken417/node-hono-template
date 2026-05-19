@@ -15,8 +15,8 @@ CREATE TABLE public.member (
     email_hash  text,
     password    text NOT NULL,
     salt        text NOT NULL,
-    create_time timestamp without time zone DEFAULT now() NOT NULL,
-    update_time timestamp without time zone DEFAULT now() NOT NULL
+    create_time timestamptz DEFAULT now() NOT NULL,
+    update_time timestamptz DEFAULT now() NOT NULL
 );
 
 -- メール確認待ち（登録前の一時保管）
@@ -28,8 +28,8 @@ CREATE TABLE public.member_pending (
     password    text NOT NULL,
     salt        text NOT NULL,
     code        text NOT NULL,
-    expires_at  timestamp without time zone NOT NULL,
-    created_at  timestamp without time zone DEFAULT now() NOT NULL
+    expires_at  timestamptz NOT NULL,
+    created_at  timestamptz DEFAULT now() NOT NULL
 );
 
 -- admin（member とは独立）
@@ -38,6 +38,6 @@ CREATE TABLE public.admin (
     login_id    text NOT NULL UNIQUE,
     password    text NOT NULL,
     salt        text NOT NULL,
-    create_time timestamp without time zone DEFAULT now() NOT NULL,
-    update_time timestamp without time zone DEFAULT now() NOT NULL
+    create_time timestamptz DEFAULT now() NOT NULL,
+    update_time timestamptz DEFAULT now() NOT NULL
 );
