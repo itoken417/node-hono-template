@@ -40,35 +40,10 @@ git clone https://github.com/itoken417/node-hono-template.git ./[プロジェク
 ```
 cd ./[プロジェクト名]
 npm install
-```
-
-`.env` を生成する
-
-```
 node ./setup/01_create_env.js
-```
-
-データベースとテーブルを作成する
-
-```
 node ./setup/02_setup_pg.js
-```
-
-管理者アカウントを追加する
-
-```
 node ./setup/03_add_admin.js
-```
-
-一般メンバーアカウントを追加する（必要に応じて）
-
-```
 node ./setup/04_add_member.js
-```
-
-メール送信をテストする（必要に応じて）
-
-```
 node ./setup/05_test_mail.js
 ```
 
@@ -106,8 +81,6 @@ http://localhost:3000
 
 CSRF保護はリクエストの `Origin` ヘッダーとサーバー側のオリジンを比較して検証する。ブラウザは `https://` のページからのフォーム送信にのみ `Origin` ヘッダーを付与するため、HTTPSなしでは正常に動作しない。nginx をリバースプロキシとして使い、Let's Encrypt で TLS を終端させることが前提となる。
 
-`.env` に `APP_DOMAIN` と `APP_PORT` を設定したうえでスクリプトを実行する。
-
 ```
 node ./setup/06_setup_nginx.js
 ```
@@ -134,13 +107,10 @@ npm start
 
 ---
 
-## APIサンプル
+## サンプル
 
-`src/routes/api/` および `src/routes/sample/` 以下を参照。
+`src/routes/sample/` 以下を参照。
 
-- `src/routes/api.ts` — APIキー発行（`X-Issuer-Key` 認証）
-- `src/routes/api/sample.ts` — サンプルCRUD（`X-API-Key` 認証）
-- `src/routes/sample/api.tsx` — ブラウザから fetch でAPIを叩くサンプルページ（`/sample/api`）
 
 ---
 
