@@ -128,6 +128,7 @@ WantedBy=multi-user.target
 const confSrcPath    = path.join(appDir, 'server/etc/nginx/conf.d', `${domain}.conf`);
 const confDstPath    = `/etc/nginx/conf.d/${domain}.conf`;
 const serviceSrcPath = path.join(appDir, 'server/etc/systemd/system', serviceName);
+const serviceDstPath = `/etc/systemd/system/${serviceName}`;
 
 // --- DNS-01 用 root スクリプト ---
 const rootShDns = `#!/bin/bash
@@ -142,7 +143,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
-systemctl link ${serviceSrcPath}
+ln -sf ${serviceSrcPath} ${serviceDstPath}
 systemctl daemon-reload
 systemctl enable ${serviceName}
 systemctl start  ${serviceName}
@@ -197,7 +198,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
-systemctl link ${serviceSrcPath}
+ln -sf ${serviceSrcPath} ${serviceDstPath}
 systemctl daemon-reload
 systemctl enable ${serviceName}
 systemctl start  ${serviceName}
