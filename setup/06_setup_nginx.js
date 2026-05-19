@@ -143,7 +143,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
-cp ${serviceSrcPath} ${serviceDstPath}
+ln -sf ${serviceSrcPath} ${serviceDstPath}
 systemctl daemon-reload
 systemctl enable ${serviceName}
 systemctl start  ${serviceName}
@@ -198,7 +198,7 @@ ln -sf ${confSrcPath} ${confDstPath}
 nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
-cp ${serviceSrcPath} ${serviceDstPath}
+ln -sf ${serviceSrcPath} ${serviceDstPath}
 systemctl daemon-reload
 systemctl enable ${serviceName}
 systemctl start  ${serviceName}
