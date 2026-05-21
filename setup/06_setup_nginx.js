@@ -179,6 +179,11 @@ chcon -t httpd_config_t "${confSrcPath}"
 nginx -t && (systemctl reload nginx 2>/dev/null || systemctl start nginx)
 
 # 3. systemd サービスを登録 & 起動
+if command -v getenforce &>/dev/null && [ "$(getenforce)" != "Disabled" ]; then
+    semanage fcontext -a -t systemd_unit_file_t "${serviceSrcPath}" 2>/dev/null || semanage fcontext -m -t systemd_unit_file_t "${serviceSrcPath}"
+    semanage fcontext -a -t bin_t "${npmPath}" 2>/dev/null || semanage fcontext -m -t bin_t "${npmPath}"
+    restorecon -v "${serviceSrcPath}" "${npmPath}"
+fi
 systemctl link ${serviceSrcPath}
 systemctl daemon-reload
 systemctl start  ${serviceName}
@@ -241,6 +246,11 @@ chcon -t httpd_config_t "${confSrcPath}"
 nginx -t && systemctl reload nginx
 
 # 5. systemd サービスを登録 & 起動
+if command -v getenforce &>/dev/null && [ "$(getenforce)" != "Disabled" ]; then
+    semanage fcontext -a -t systemd_unit_file_t "${serviceSrcPath}" 2>/dev/null || semanage fcontext -m -t systemd_unit_file_t "${serviceSrcPath}"
+    semanage fcontext -a -t bin_t "${npmPath}" 2>/dev/null || semanage fcontext -m -t bin_t "${npmPath}"
+    restorecon -v "${serviceSrcPath}" "${npmPath}"
+fi
 systemctl link ${serviceSrcPath}
 systemctl daemon-reload
 systemctl start  ${serviceName}
